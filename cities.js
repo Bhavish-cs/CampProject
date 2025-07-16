@@ -36,12 +36,12 @@ module.exports = [
         state: "Texas",
     },
     {
-        city: "Philadelphia",
-        growth_from_2000_to_2013: "2.6%",
-        latitude: 39.9525839,
-        longitude: -75.1652215,
-        population: "1553165",
-        rank: "5",
+        // city: "Philadelphia",
+        // growth_from_2000_to_2013: "2.6%",
+        // latitude: 39.9525839,
+        // longitude: -75.1652215,
+        // population: "1553165",
+        // rank: "5",
         state: "Pennsylvania",
     },
     {
