@@ -1,4 +1,8 @@
-module.exports = [
+const cities = [
+    { city: "New York", state: "NY" },
+    { city: "Los Angeles", state: "CA" },
+    // ...more cities
+
     {
         city: "New York",
         growth_from_2000_to_2013: "4.8%",
@@ -9000,3 +9004,4 @@ module.exports = [
         state: "Florida",
     },
 ];
+export default cities;
