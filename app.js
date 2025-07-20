@@ -27,21 +27,13 @@ app.get('/', (req, res) => {
     res.send('HELLO FROM CAMP!');
 });
 
-// Route to create a new campground
-app.get('/makecampground', async (req, res) => {
-    try {
-        const camp = new Campground({
-            title: 'My Backyard',
-            price: 10,
-            description: 'Cheap camping!',
-            location: 'My City'
-        });
-        await camp.save();
-        res.send(camp);
-    } catch (err) {
-        res.status(500).send('Error creating campground');
-    }
+app.get('/campgrounds', async (req, res) => {
+    const campgrounds = await Campground.find({});
+    res.render('campgrounds/index', { campgrounds });
 });
+
+// Route to create a new campground
+
 
 app.listen(3000, () => {
     console.log('Serving on port 3000');
