@@ -27,6 +27,14 @@ app.get('/', (req, res) => {
     res.send('HELLO FROM CAMP!');
 });
 
+app.post('/campgrounds', async (req, res) => {
+    // Access form data using req.body
+    const newCampground = new Campground(req.body.campground);
+    await newCampground.save();
+    res.redirect(`/campgrounds/${newCampground._id}`); // Redirect to the newly created campground's show page
+});
+
+
 app.get('/campgrounds', async (req, res) => {
     const campgrounds = await Campground.find({});
     res.render('campgrounds/index', { campgrounds });
@@ -35,9 +43,17 @@ app.get('/campgrounds', async (req, res) => {
 
 
 app.get('/campgrounds/new', (req, res) => {
-    res.render('campgrounds/new')
-})
-// Route to create a new campground
+    res.render('campgrounds/new');
+});
+
+app.post('/campgrounds', async (req, res) => {
+    // Access form data using req.body
+    const newCampground = new Campground(req.body.campground);
+    await newCampground.save();
+    res.redirect(`/campgrounds/${newCampground._id}`); // Redirect to the newly created campground's show page
+});
+
+
 
 app.get('/campgrounds/:id', async (req, res,) => {
     const campground = await Campground.findById(req.params.id);
