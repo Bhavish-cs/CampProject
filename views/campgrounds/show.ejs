@@ -6,10 +6,14 @@
     <h2>
         <%= campground.location %>
     </h2>
-    <img src="<%= campground.image %>" alt="Image of <%= campground.title %>" style="width: 300px; height: auto;">
-    <p>Image URL: <%= campground.image %>
-    </p> <!-- For debugging -->
+    <% if (campground.image) { %>
+        <img src="<%= campground.image %>" alt="Image of <%= campground.title %>" class="img-fluid" style="max-width: 500px;">
+    <% } %>
 
+    <% if (campground.price) { %>
+        <p><strong>Price:</strong> $<%= campground.price %>/night</p>
+    <% } %>
+    
     <p>
         <%= campground.description %>
     </p>
