@@ -10,18 +10,33 @@ mongoose.connect('mongodb://localhost:27017/yelp-camp')
 
 const sample = array => array[Math.floor(Math.random() * array.length)];
 
-// Generate random campground images using Picsum
-const getRandomCampgroundImage = () => {
-    const imageId = Math.floor(Math.random() * 1000) + 1;
-    return `https://picsum.photos/800/600?random=${imageId}`;
+const getImageFromUnsplash = async () => {
+    try {
+        const res = await axios.get('https://api.unsplash.com/photos/random', {
+            params: {
+                query: 'camping', // You can change this to "mountain", "forest", etc.
+                orientation: 'landscape'
+            },
+            headers: {
+                Authorization: `Client-ID ${process.env.UNSPLASH_ACCESS_KEY}`
+            }
+        });
+        return res.data.urls.regular;
+    } catch (err) {
+        console.error("Error fetching from Unsplash:", err.message);
+        // fallback image
+        return 'https://source.unsplash.com/collection/483251/1600x900';
+    }
 };
+
 
 const seedDB = async () => {
     await Campground.deleteMany({});
 
     for (let i = 0; i < 50; i++) {
         const random1000 = Math.floor(Math.random() * cities.length);
-        const imgUrl = getRandomCampgroundImage();
+        const imgUrl = await getImageFromUnsplash();
+
 
         const camp = new Campground({
             title: `${sample(descriptors)} ${sample(places)}`,
