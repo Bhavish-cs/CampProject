@@ -6,23 +6,26 @@
     <h2>
         <%= campground.location %>
     </h2>
+
     <% if (campground.image) { %>
-        <img src="<%= campground.image %>" alt="Image of <%= campground.title %>" class="img-fluid" style="max-width: 500px;">
-    <% } %>
+        <img src="<%= campground.image %>" alt="Image of <%= campground.title %>" style="width: 300px; height: auto;"
+            class="img-fluid">
+        <% } %>
 
-    <% if (campground.price) { %>
-        <p><strong>Price:</strong> $<%= campground.price %>/night</p>
-    <% } %>
-    
-    <p>
-        <%= campground.description %>
-    </p>
+            <% if (campground.price) { %>
+                <p><strong>Price:</strong> $<%= campground.price %>/night</p>
+                <% } %>
 
-    <p><a href="/campgrounds/<%=campground._id%>/edit">Edit</a> </p>
-    <p>
-    <form action="/campgrounds/<%=campground._id%>?_method=DELETE" method="POST">
-        <button>Delete</button></p>
-    </form>
-    <footer>
-        <a href="/campgrounds"> ALL Campgrounds</a>
-    </footer>
+                    <p>
+                        <%= campground.description %>
+                    </p>
+
+                    <p><a href="/campgrounds/<%= campground._id %>/edit">Edit</a></p>
+
+                    <form action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
+                        <button>Delete</button>
+                    </form>
+
+                    <footer>
+                        <a href="/campgrounds">ALL Campgrounds</a>
+                    </footer>

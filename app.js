@@ -79,6 +79,10 @@ app.delete('/campgrounds/:id', async (req, res) => {
 
 })
 
-app.listen(3000, () => {
+app.listen(3001, () => {
     console.log('Serving on port 3000');
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> 8fa26b1 ( still the normal changes)
