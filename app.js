@@ -13,11 +13,8 @@ import methodOverride from 'method-override';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Use MongoDB Atlas connection string
-const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
-
 // Connect to MongoDB
-mongoose.connect(dbUrl)
+mongoose.connect('mongodb://localhost:27017/yelp-camp')
     .then(() => console.log("Database Connected"))
     .catch(err => console.log("Connection error:", err));
 
@@ -81,8 +78,4 @@ app.delete('/campgrounds/:id', async (req, res) => {
 
 app.listen(3001, () => {
     console.log('Serving on port 3000');
-<<<<<<< HEAD
 });
-=======
-});
->>>>>>> 8fa26b1 ( still the normal changes)
