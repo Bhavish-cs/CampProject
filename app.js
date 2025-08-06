@@ -69,7 +69,20 @@ app.get('/campgrounds/new', (req, res) => {
 
 app.get('/campgrounds/:id', async (req, res,) => {
     const campground = await Campground.findById(req.params.id);
-    res.render('campgrounds/show', { campground });
+    // In your route handler before rendering:
+    function timeAgo(date) {
+        const now = new Date();
+        const seconds = Math.floor((now - date) / 1000);
+        const days = Math.floor(seconds / 86400);
+        if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
+        const hours = Math.floor(seconds / 3600);
+        if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+        const minutes = Math.floor(seconds / 60);
+        if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+        return 'just now';
+    }
+    // Pass it to your EJS render:
+    res.render('campgrounds/show', { campground, timeAgo });
 });
 
 app.get('/campgrounds/:id/edit', async (req, res) => {
@@ -77,9 +90,21 @@ app.get('/campgrounds/:id/edit', async (req, res) => {
     res.render('campgrounds/edit', { campground })
 })
 
-app.put('/campgrounds/:id', async (req, res) => {
+app.put('/campgrounds/:id', upload.single('image'), async (req, res) => {
     const { id } = req.params;
-    const campground = await Campground.findByIdAndUpdate(id, req.body.campground);
+    const campground = await Campground.findById(id);
+
+    // Update text fields
+    campground.title = req.body.campground.title;
+    campground.location = req.body.campground.location;
+    campground.price = req.body.campground.price;
+    campground.description = req.body.campground.description;
+
+    // If a new image was uploaded, update the image field
+    if (req.file) {
+        campground.image = `/uploads/${req.file.filename}`;
+    }
+    await campground.save();
     res.redirect(`/campgrounds/${campground._id}`);
 });
 
