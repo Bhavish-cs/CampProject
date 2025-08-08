@@ -2,18 +2,36 @@
     <div class="row justify-content-center">
         <div class="col-8">
             <h1 class="text-center mb-4">New Campground</h1>
-            <form action="/campgrounds" method="POST" enctype="multipart/form-data">
+            <form action="/campgrounds" method="POST" enctype="multipart/form-data" novalidate class="validation-form">
                 <div class="mb-3">
                     <label class="form-label" for="title">Title</label>
                     <input class="form-control" type="text" id="title" name="campground[title]" required>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                        Please enter a title.
+                    </div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label" for="location">Location</label>
                     <input class="form-control" type="text" id="location" name="campground[location]" required>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                        Please enter a location.
+                    </div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label" for="image">Image File</label>
-                    <input class="form-control" type="file" id="image" name="image">
+                    <input class="form-control" type="file" id="image" name="image" required>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                        Please select an image file.
+                    </div>
                 </div>
                 <div class="mb-3">
                     <label for="validationCustomUsername" class="form-label">Price</label>
@@ -21,14 +39,24 @@
                         <span class="input-group-text" id="inputGroupPrepend">$</span>
                         <input type="text" class="form-control" id="validationCustomUsername"
                             aria-describedby="inputGroupPrepend" placeholder="0.00" name="campground[price]" required>
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
                         <div class="invalid-feedback">
-                            Please choose a username.
+                            Please enter a price.
                         </div>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label" for="description">Description</label>
-                    <textarea class="form-control" id="description" name="campground[description]" rows="3"></textarea>
+                    <textarea class="form-control" id="description" name="campground[description]" rows="3"
+                        required></textarea>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                        Please enter a description.
+                    </div>
                 </div>
                 <div class="mb-3 d-flex justify-content-between align-items-center px-2">
                     <button class="btn btn-success" type="submit">Add Campground</button>
@@ -37,3 +65,26 @@
             </form>
         </div>
     </div>
+
+    <script>
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function () {
+            'use strict'
+
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            const forms = document.querySelectorAll('.validation-form')
+
+            // Loop over them and prevent submission
+            Array.from(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
