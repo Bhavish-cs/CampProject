@@ -1,14 +1,15 @@
 import express from 'express';
-import path from 'path';
+import path, { dirname } from 'path';
 import mongoose from 'mongoose';
 import Campground from './models/campground.js';
 import { fileURLToPath } from 'url';
 import ejsMate from 'ejs-mate';
-import { dirname } from 'path';
 import methodOverride from 'method-override';
 import multer from 'multer';
+import catchAsync from './utils/catchAsync.js';
+import ExpressError from './utils/ExpressError.js';
 
-// For __dirname in ES modules
+// Fix __dirname and __filename for ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -18,16 +19,16 @@ mongoose.connect('mongodb://localhost:27017/yelp-camp')
     .catch(err => console.log("Connection error:", err));
 
 const app = express();
+
 const upload = multer({
     dest: 'uploads/',
     fileFilter: (req, file, cb) => {
-        // Accept images only
         if (!file.mimetype.startsWith('image/')) {
             return cb(new Error('Only image files are allowed!'), false);
         }
         cb(null, true);
     }
-}); // 'uploads/' is the folder where files will be stored
+});
 
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
@@ -43,33 +44,58 @@ app.get('/', (req, res) => {
     res.send('HELLO FROM CAMP!');
 });
 
-app.post('/campgrounds', upload.single('image'), async (req, res) => {
+// Create campground
+app.post('/campgrounds', upload.single('image'), catchAsync(async (req, res) => {
     const campgroundData = req.body.campground;
-    // Save the file path to the database
+
+    if (isNaN(Number(campgroundData.price)) || campgroundData.price === '') {
+        throw new ExpressError('Price must be a number', 400);
+    }
+
     if (req.file) {
         campgroundData.image = `/uploads/${req.file.filename}`;
     }
+
     const newCampground = new Campground(campgroundData);
     await newCampground.save();
-    res.redirect(`/campgrounds/${newCampground._id}`); // Redirect to the newly created campground's show page
-});
+    res.redirect(`/campgrounds/${newCampground._id}`);
+}));
 
-
+// List campgrounds
 app.get('/campgrounds', async (req, res) => {
     const campgrounds = await Campground.find({});
     res.render('campgrounds/index', { campgrounds });
 });
 
-
-
+// New campground form
 app.get('/campgrounds/new', (req, res) => {
     res.render('campgrounds/new');
 });
 
 
-app.get('/campgrounds/:id', async (req, res,) => {
-    const campground = await Campground.findById(req.params.id);
-    // In your route handler before rendering:
+
+
+app.get('/campgrounds/:id', catchAsync(async (req, res) => {
+    const { id } = req.params;
+
+    // Check if ID is a valid Mongo ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).render('error', {
+            err: { message: 'Campground not found', statusCode: 404 }
+        });
+    }
+
+    // Fetch campground from DB
+    const campground = await Campground.findById(id);
+
+    // If not found, send 404
+    if (!campground) {
+        return res.status(404).render('error', {
+            err: { message: 'Campground not found', statusCode: 404 }
+        });
+    }
+
+    // Your timeAgo function
     function timeAgo(date) {
         const now = new Date();
         const seconds = Math.floor((now - date) / 1000);
@@ -81,40 +107,68 @@ app.get('/campgrounds/:id', async (req, res,) => {
         if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
         return 'just now';
     }
-    // Pass it to your EJS render:
+
+    // Render the show page
     res.render('campgrounds/show', { campground, timeAgo });
+}));
+
+
+
+// Edit campground
+app.get('/campgrounds/:id/edit', async (req, res) => {
+    const campground = await Campground.findById(req.params.id);
+    res.render('campgrounds/edit', { campground });
 });
 
-app.get('/campgrounds/:id/edit', async (req, res) => {
-    const campground = await Campground.findById(req.params.id)
-    res.render('campgrounds/edit', { campground })
-})
+// Update campground
 
-app.put('/campgrounds/:id', upload.single('image'), async (req, res) => {
+app.put('/campgrounds/:id', upload.single('image'), catchAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
 
-    // Update text fields
+    if (isNaN(Number(req.body.campground.price)) || req.body.campground.price === '') {
+        throw new ExpressError('Price must be a number', 400);
+    }
+
     campground.title = req.body.campground.title;
     campground.location = req.body.campground.location;
     campground.price = req.body.campground.price;
     campground.description = req.body.campground.description;
 
-    // If a new image was uploaded, update the image field
     if (req.file) {
         campground.image = `/uploads/${req.file.filename}`;
     }
+
     await campground.save();
     res.redirect(`/campgrounds/${campground._id}`);
-});
+}));
 
+
+
+// Delete campground
 app.delete('/campgrounds/:id', async (req, res) => {
     const { id } = req.params;
     await Campground.findByIdAndDelete(id);
     res.redirect('/campgrounds');
+});
 
+// Error handler
+app.use((err, req, res, next) => {
+    res.status(err.statusCode || 500).send(err.message || 'Oh boy something is wrong');
+});
+
+app.all('*', (req, res, next) => {
+    next(new ExpressError('Page Not Found', 404))
 })
 
+app.use((err, req, res, next) => {
+    const { statusCode = 500 } = err;
+    if (!err.message) err.message = 'Oh no, something went wrong';
+    res.status(statusCode).render('error', { err });
+});
+
+
+// Start server
 app.listen(3000, () => {
     console.log('Serving on port 3000');
 });
