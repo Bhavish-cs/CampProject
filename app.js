@@ -4,10 +4,13 @@ import mongoose from 'mongoose';
 import Campground from './models/campground.js';
 import { fileURLToPath } from 'url';
 import ejsMate from 'ejs-mate';
+import Joi from 'joi';
 import methodOverride from 'method-override';
 import multer from 'multer';
 import catchAsync from './utils/catchAsync.js';
 import ExpressError from './utils/ExpressError.js';
+import validateCampground from './middlewares/validateCampground.js';
+import { title } from 'process';
 
 // Fix __dirname and __filename for ESM
 const __filename = fileURLToPath(import.meta.url);
@@ -45,21 +48,13 @@ app.get('/', (req, res) => {
 });
 
 // Create campground
-app.post('/campgrounds', upload.single('image'), catchAsync(async (req, res) => {
+app.post('/campgrounds', upload.single('image'), validateCampground, catchAsync(async (req, res) => {
     const campgroundData = req.body.campground;
-
-    if (isNaN(Number(campgroundData.price)) || campgroundData.price === '') {
-        throw new ExpressError('Price must be a number', 400);
-    }
-
-    if (req.file) {
-        campgroundData.image = `/uploads/${req.file.filename}`;
-    }
-
     const newCampground = new Campground(campgroundData);
     await newCampground.save();
     res.redirect(`/campgrounds/${newCampground._id}`);
 }));
+
 
 // List campgrounds
 app.get('/campgrounds', async (req, res) => {
@@ -122,7 +117,7 @@ app.get('/campgrounds/:id/edit', async (req, res) => {
 
 // Update campground
 
-app.put('/campgrounds/:id', upload.single('image'), catchAsync(async (req, res) => {
+app.put('/campgrounds/:id', upload.single('image'), validateCampground, catchAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
 
@@ -153,9 +148,6 @@ app.delete('/campgrounds/:id', async (req, res) => {
 });
 
 // Error handler
-app.use((err, req, res, next) => {
-    res.status(err.statusCode || 500).send(err.message || 'Oh boy something is wrong');
-});
 
 app.all('*', (req, res, next) => {
     next(new ExpressError('Page Not Found', 404))
