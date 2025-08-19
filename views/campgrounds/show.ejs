@@ -1,8 +1,9 @@
 <% layout('layouts/boilerplate') %>
-    <div class="row">
-        <div class="col-6 offset-3">
-            <div class="card" style="width: 18rem;">
-                <img src="<%= campground.image %>" class="card-img-top" alt="...">
+    <div class="row justify-content-center">
+        <div class="col-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <img src="<%= campground.image %>" class="card-img-top img-fluid" alt="..."
+                    style="object-fit:cover; height:320px; border-top-left-radius:0.5rem; border-top-right-radius:0.5rem;">
                 <div class="card-body">
                     <h5 class="card-title">
                         <%= campground.title %>
@@ -38,8 +39,71 @@
                         </a>
                     </div>
                 </div>
+                <!-- Review Submission Form in a separate div -->
+            </div> <!-- close card -->
+        </div> <!-- close col -->
+    </div> <!-- close row -->
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="mb-3 text-primary"><i class="bi bi-chat-dots"></i> Leave a Review</h5>
+                    <form action="/campgrounds/<%= campground._id %>/reviews" method="POST">
+                        <div class="mb-3">
+                            <label for="reviewBody" class="form-label fw-semibold">Your Review</label>
+                            <textarea class="form-control" id="reviewBody" name="review[body]" rows="3"
+                                placeholder="Share your experience..." required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold d-block mb-1">Rating</label>
+                            <div id="starRating" class="mb-1" style="font-size:2rem;">
+                                <% for(let i=1; i<=5; i++) { %>
+                                    <span class="star" data-value="<%=i%>"
+                                        style="color:#ddd; cursor:pointer; transition:color 0.2s;">
+                                        <i class="bi bi-star-fill"></i>
+                                    </span>
+                                    <% } %>
+                                        <input type="hidden" name="review[rating]" id="ratingInput" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn px-4 py-2 fw-bold shadow-sm"
+                            style="background: #ffd814; color: #111; border: 1px solid #fcd200; border-radius: 20px; letter-spacing: 1px; box-shadow: 0 2px 5px rgba(0,0,0,0.07); font-weight: 600; font-size: 1.1rem;">
+                            <i class="bi bi-send"></i> Submit Review
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
+    </div>
+    <script>
+        // Interactive star rating
+        document.addEventListener('DOMContentLoaded', function () {
+            const stars = document.querySelectorAll('#starRating .star');
+            const ratingInput = document.getElementById('ratingInput');
+            let selected = 0;
+            stars.forEach((star, idx) => {
+                star.addEventListener('mouseover', () => {
+                    highlightStars(idx + 1);
+                });
+                star.addEventListener('mouseout', () => {
+                    highlightStars(selected);
+                });
+                star.addEventListener('click', () => {
+                    selected = idx + 1;
+                    ratingInput.value = selected;
+                    highlightStars(selected);
+                });
+            });
+            function highlightStars(count) {
+                stars.forEach((star, i) => {
+                    star.style.color = i < count ? '#ffd700' : '#ddd';
+                });
+            }
+        });
+    </script>
+    </div>
+    </div>
     </div>
     <p class="text-muted small">
         Posted <%= timeAgo(campground.createdAt) %>
