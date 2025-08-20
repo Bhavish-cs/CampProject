@@ -1,7 +1,9 @@
+
 import express from 'express';
 import path, { dirname } from 'path';
 import mongoose from 'mongoose';
 import Campground from './models/campground.js';
+import Review from './models/review.js';
 import { fileURLToPath } from 'url';
 import ejsMate from 'ejs-mate';
 import Joi from 'joi';
@@ -57,10 +59,10 @@ app.post('/campgrounds', upload.single('image'), validateCampground, catchAsync(
 
 
 // List campgrounds
-app.get('/campgrounds', async (req, res) => {
+app.get('/campgrounds', catchAsync(async (req, res) => {
     const campgrounds = await Campground.find({});
     res.render('campgrounds/index', { campgrounds });
-});
+}));
 
 // New campground form
 app.get('/campgrounds/new', (req, res) => {
@@ -80,8 +82,8 @@ app.get('/campgrounds/:id', catchAsync(async (req, res) => {
         });
     }
 
-    // Fetch campground from DB
-    const campground = await Campground.findById(id);
+    // Fetch campground from DB and populate reviews
+    const campground = await Campground.findById(id).populate('reviews');
 
     // If not found, send 404
     if (!campground) {
@@ -110,10 +112,23 @@ app.get('/campgrounds/:id', catchAsync(async (req, res) => {
 
 
 // Edit campground
-app.get('/campgrounds/:id/edit', async (req, res) => {
-    const campground = await Campground.findById(req.params.id);
+app.get('/campgrounds/:id/edit', catchAsync(async (req, res) => {
+    const { id } = req.params;
+
+    // Check if ID is a valid Mongo ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        throw new ExpressError('Campground not found', 404);
+    }
+
+    const campground = await Campground.findById(id);
+
+    // If not found, throw error
+    if (!campground) {
+        throw new ExpressError('Campground not found', 404);
+    }
+
     res.render('campgrounds/edit', { campground });
-});
+}));
 
 // Update campground
 
@@ -141,11 +156,94 @@ app.put('/campgrounds/:id', upload.single('image'), validateCampground, catchAsy
 
 
 // Delete campground
-app.delete('/campgrounds/:id', async (req, res) => {
+app.delete('/campgrounds/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
-    await Campground.findByIdAndDelete(id);
+
+    // Check if ID is a valid Mongo ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        throw new ExpressError('Campground not found', 404);
+    }
+
+    const campground = await Campground.findByIdAndDelete(id);
+
+    // If not found, throw error
+    if (!campground) {
+        throw new ExpressError('Campground not found', 404);
+    }
+
     res.redirect('/campgrounds');
-});
+}));
+
+// POST route to handle review submission
+app.post('/campgrounds/:id/reviews', catchAsync(async (req, res) => {
+    const { id } = req.params;
+
+    // Check if ID is a valid Mongo ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        throw new ExpressError('Campground not found', 404);
+    }
+
+    const campground = await Campground.findById(id);
+    if (!campground) {
+        throw new ExpressError('Campground not found', 404);
+    }
+
+    const { body, rating } = req.body.review;
+
+    // Validate review body (not empty or just whitespace)
+    if (!body || body.trim().length === 0) {
+        throw new ExpressError('Review text cannot be empty', 400);
+    }
+
+    // Validate rating exists and is within range
+    if (!rating || rating < 1 || rating > 5) {
+        throw new ExpressError('Rating must be between 1 and 5 stars', 400);
+    }
+
+    // Validate review length (optional - prevent spam)
+    if (body.trim().length < 5) {
+        throw new ExpressError('Review must be at least 5 characters long', 400);
+    }
+
+    if (body.trim().length > 500) {
+        throw new ExpressError('Review cannot exceed 500 characters', 400);
+    }
+
+    const review = new Review({
+        body: body.trim(),
+        rating: parseInt(rating),
+        campground: id
+    });
+
+    await review.save();
+    campground.reviews.push(review._id);
+    await campground.save();
+    res.redirect(`/campgrounds/${id}`);
+}));
+
+// DELETE route to handle review deletion
+app.delete('/campgrounds/:id/reviews/:reviewId', catchAsync(async (req, res) => {
+    const { id, reviewId } = req.params;
+
+    // Check if both IDs are valid Mongo ObjectIds
+    if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(reviewId)) {
+        throw new ExpressError('Campground or Review not found', 404);
+    }
+
+    // Find the campground and remove the review from its reviews array
+    const campground = await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
+    if (!campground) {
+        throw new ExpressError('Campground not found', 404);
+    }
+
+    // Delete the review from the Review collection
+    const deletedReview = await Review.findByIdAndDelete(reviewId);
+    if (!deletedReview) {
+        throw new ExpressError('Review not found', 404);
+    }
+
+    res.redirect(`/campgrounds/${id}`);
+}));
 
 // Error handler
 
