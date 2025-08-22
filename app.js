@@ -13,6 +13,8 @@ import catchAsync from './utils/catchAsync.js';
 import ExpressError from './utils/ExpressError.js';
 import validateCampground from './middlewares/validateCampground.js';
 import { title } from 'process';
+import session from 'express-session';
+import flash from 'connect-flash';
 
 // Fix __dirname and __filename for ESM
 const __filename = fileURLToPath(import.meta.url);
@@ -39,10 +41,34 @@ app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// Session configuration
+const sessionConfig = {
+    secret: 'thisshouldbeabettersecret!',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // 1 week
+        maxAge: 1000 * 60 * 60 * 24 * 7
+    }
+};
+
 // Middleware
+app.use(session(sessionConfig));
+app.use(flash());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use('/uploads', express.static('uploads'));
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Flash messages middleware
+app.use((req, res, next) => {
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    res.locals.warning = req.flash('warning');
+    res.locals.info = req.flash('info');
+    next();
+});
 
 // Home Route
 app.get('/', (req, res) => {
@@ -54,6 +80,7 @@ app.post('/campgrounds', upload.single('image'), validateCampground, catchAsync(
     const campgroundData = req.body.campground;
     const newCampground = new Campground(campgroundData);
     await newCampground.save();
+    req.flash('success', 'Successfully created a new campground!');
     res.redirect(`/campgrounds/${newCampground._id}`);
 }));
 
@@ -77,9 +104,8 @@ app.get('/campgrounds/:id', catchAsync(async (req, res) => {
 
     // Check if ID is a valid Mongo ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).render('error', {
-            err: { message: 'Campground not found', statusCode: 404 }
-        });
+        req.flash('error', 'Cannot find that campground!');
+        return res.redirect('/campgrounds');
     }
 
     // Fetch campground from DB and populate reviews
@@ -87,9 +113,8 @@ app.get('/campgrounds/:id', catchAsync(async (req, res) => {
 
     // If not found, send 404
     if (!campground) {
-        return res.status(404).render('error', {
-            err: { message: 'Campground not found', statusCode: 404 }
-        });
+        req.flash('error', 'Cannot find that campground!');
+        return res.redirect('/campgrounds');
     }
 
     // Your timeAgo function
@@ -150,6 +175,7 @@ app.put('/campgrounds/:id', upload.single('image'), validateCampground, catchAsy
     }
 
     await campground.save();
+    req.flash('success', 'Successfully updated campground!');
     res.redirect(`/campgrounds/${campground._id}`);
 }));
 
@@ -171,6 +197,7 @@ app.delete('/campgrounds/:id', catchAsync(async (req, res) => {
         throw new ExpressError('Campground not found', 404);
     }
 
+    req.flash('success', 'Successfully deleted campground!');
     res.redirect('/campgrounds');
 }));
 
@@ -218,6 +245,7 @@ app.post('/campgrounds/:id/reviews', catchAsync(async (req, res) => {
     await review.save();
     campground.reviews.push(review._id);
     await campground.save();
+    req.flash('success', 'Created new review!');
     res.redirect(`/campgrounds/${id}`);
 }));
 
@@ -242,6 +270,7 @@ app.delete('/campgrounds/:id/reviews/:reviewId', catchAsync(async (req, res) => 
         throw new ExpressError('Review not found', 404);
     }
 
+    req.flash('success', 'Successfully deleted review!');
     res.redirect(`/campgrounds/${id}`);
 }));
 
