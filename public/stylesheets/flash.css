@@ -8,16 +8,34 @@
     animation: slideInDown 0.4s ease-out;
 }
 
+
+/* Modern, aesthetic gradients for flash messages */
 .alert-success {
-    background: linear-gradient(135deg, #28a745, #20c997);
-    color: white;
-    border-left: 5px solid #155724;
+    background: linear-gradient(120deg, #43e97b 0%, #38f9d7 100%);
+    color: #fff;
+    border-left: 6px solid #1fa463;
+    box-shadow: 0 2px 16px 0 rgba(67, 233, 123, 0.15);
 }
 
 .alert-danger {
-    background: linear-gradient(135deg, #dc3545, #fd7e14);
-    color: white;
-    border-left: 5px solid #721c24;
+    background: linear-gradient(120deg, #ff5858 0%, #f09819 100%);
+    color: #fff;
+    border-left: 6px solid #c82333;
+    box-shadow: 0 2px 16px 0 rgba(255, 88, 88, 0.15);
+}
+
+.alert-warning {
+    background: linear-gradient(120deg, #f7971e 0%, #ffd200 100%);
+    color: #fff;
+    border-left: 6px solid #e6b800;
+    box-shadow: 0 2px 16px 0 rgba(255, 210, 0, 0.12);
+}
+
+.alert-info {
+    background: linear-gradient(120deg, #56ccf2 0%, #2f80ed 100%);
+    color: #fff;
+    border-left: 6px solid #2176ae;
+    box-shadow: 0 2px 16px 0 rgba(44, 123, 229, 0.12);
 }
 
 .alert i {
