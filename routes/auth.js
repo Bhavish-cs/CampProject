@@ -1,7 +1,7 @@
 import express from 'express';
 import User from '../models/user.js';
 import catchAsync from '../utils/catchAsync.js';
-import { generateOTP, sendOTPEmail, verifyOTP } from '../utils/emailService.js';
+import { generateOTP, sendOTPEmail, verifyOTP } from '../utils/emailService2.js';
 
 const router = express.Router();
 
@@ -44,37 +44,29 @@ router.get('/login', (req, res) => {
 
 // Handle login - Step 1: Send OTP
 router.post('/login', catchAsync(async (req, res) => {
-    console.log('Login route hit with:', req.body);
     const { email } = req.body;
 
     // Validation
     if (!email) {
-        console.log('No email provided');
         req.flash('error', 'Email is required');
         return res.redirect('/login');
     }
 
-    console.log('Looking for user with email:', email);
     // Find user by email
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
-        console.log('User not found');
         req.flash('error', 'No account found with this email address');
         return res.redirect('/login');
     }
 
-    console.log('User found, generating OTP');
     // Generate and save OTP
     const otp = generateOTP();
     user.otp = otp;
     user.otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
     await user.save();
-    console.log('OTP saved to database');
 
-    console.log('Sending OTP email...');
     // Send OTP email
     const emailResult = await sendOTPEmail(email, otp);
-    console.log('Email result:', emailResult);
 
     if (emailResult.success) {
         req.session.tempEmail = email; // Store email in session temporarily
