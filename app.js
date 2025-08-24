@@ -4,6 +4,7 @@ import path, { dirname } from 'path';
 import mongoose from 'mongoose';
 import Campground from './models/campground.js';
 import Review from './models/review.js';
+import authRoutes from './routes/auth.js';
 import { fileURLToPath } from 'url';
 import ejsMate from 'ejs-mate';
 import Joi from 'joi';
@@ -15,6 +16,10 @@ import validateCampground from './middlewares/validateCampground.js';
 import { title } from 'process';
 import session from 'express-session';
 import flash from 'connect-flash';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 // Fix __dirname and __filename for ESM
 const __filename = fileURLToPath(import.meta.url);
@@ -43,7 +48,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Session configuration
 const sessionConfig = {
-    secret: 'thisshouldbeabettersecret!',
+    secret: process.env.SESSION_SECRET || 'thisshouldbeabettersecret!',
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -59,16 +64,23 @@ app.use(flash());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use('/uploads', express.static('uploads'));
+
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Flash messages middleware
+// Flash messages middleware (MUST be before routes)
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     res.locals.warning = req.flash('warning');
     res.locals.info = req.flash('info');
+    // Make user info available in all templates
+    res.locals.currentUser = req.session.user_id;
+    res.locals.username = req.session.username;
     next();
 });
+
+// Auth routes
+app.use(authRoutes);
 
 // Home Route
 app.get('/', (req, res) => {

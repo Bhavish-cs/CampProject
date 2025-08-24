@@ -1,0 +1,45 @@
+<% layout('layouts/boilerplate') %>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <h2 class="mb-4">Verify OTP</h2>
+                <p class="text-muted mb-4">We sent a 6-digit code to <strong>
+                        <%= email %>
+                    </strong></p>
+
+                <form action="/verify-otp" method="POST">
+                    <div class="mb-3">
+                        <label for="otp" class="form-label">Enter 6-digit OTP</label>
+                        <input type="text" class="form-control text-center" id="otp" name="otp" maxlength="6"
+                            pattern="[0-9]{6}" required style="font-size: 24px; letter-spacing: 5px;">
+                        <div class="form-text">Enter the 6-digit code from your email</div>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100 mb-3">Verify & Login</button>
+                </form>
+
+                <div class="text-center">
+                    <form action="/resend-otp" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-link p-0">Didn't receive code? Resend OTP</button>
+                    </form>
+                </div>
+
+                <div class="mt-3 text-center">
+                    <a href="/login">← Back to Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-focus OTP input and format
+        document.getElementById('otp').addEventListener('input', function (e) {
+            // Only allow numbers
+            this.value = this.value.replace(/[^0-9]/g, '');
+
+            // Auto-submit when 6 digits are entered
+            if (this.value.length === 6) {
+                this.form.submit();
+            }
+        });
+    </script>
