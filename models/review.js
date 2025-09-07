@@ -13,6 +13,11 @@ const reviewSchema = new Schema({
         max: 5,
         required: true
     },
+    author: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     campground: {
         type: Schema.Types.ObjectId,
         ref: 'Campground',

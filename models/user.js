@@ -13,6 +13,11 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    googleId: {
+        type: String,
+        sparse: true,
+        unique: true
+    },
     isVerified: {
         type: Boolean,
         default: false
