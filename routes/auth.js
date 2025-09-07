@@ -2,6 +2,7 @@ import express from 'express';
 import User from '../models/user.js';
 import catchAsync from '../utils/catchAsync.js';
 import { generateOTP, sendOTPEmail, verifyOTP } from '../utils/emailService2.js';
+import passport from 'passport';
 
 const router = express.Router();
 
@@ -147,36 +148,71 @@ router.post('/resend-otp', catchAsync(async (req, res) => {
         return res.redirect('/login');
     }
 
-    // Generate new OTP
+    // Generate and save new OTP
     const otp = generateOTP();
     user.otp = otp;
-    user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+    user.otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
     await user.save();
 
-    // Send new OTP
+    // Send new OTP email
     const emailResult = await sendOTPEmail(email, otp);
 
     if (emailResult.success) {
-        req.flash('success', 'New OTP sent to your email');
+        req.flash('success', 'New OTP sent to your email.');
+        res.redirect('/verify-otp');
     } else {
-        req.flash('error', 'Failed to send OTP. Please try again.');
+        req.flash('error', 'Failed to resend OTP. Please try again.');
+        res.redirect('/verify-otp');
     }
-
-    res.redirect('/verify-otp');
 }));
 
 // Logout
-router.post('/logout', (req, res) => {
+router.get('/logout', (req, res) => {
+    // Store success message before destroying session
+    const successMessage = 'Logged out successfully!';
+
+    // Clear manual session data first
     req.session.user_id = null;
     req.session.username = null;
     req.session.tempEmail = null;
-    req.flash('success', 'Logged out successfully!');
-    res.redirect('/campgrounds');
+
+    // Use passport logout for OAuth users
+    if (req.user) {
+        req.logout((err) => {
+            if (err) {
+                console.error('Passport logout error:', err);
+                req.flash('error', 'Error during logout');
+                return res.redirect('/campgrounds');
+            }
+            req.flash('success', successMessage);
+            res.redirect('/campgrounds');
+        });
+    } else {
+        // Direct session logout for email/OTP users
+        req.flash('success', successMessage);
+        res.redirect('/campgrounds');
+    }
 });
+
+// Google OAuth routes
+router.get('/auth/google',
+    passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+router.get('/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    (req, res) => {
+        // Successful authentication
+        req.session.user_id = req.user._id;
+        req.session.username = req.user.username;
+        req.flash('success', `Welcome back, ${req.user.username}!`);
+        res.redirect('/campgrounds');
+    }
+);
 
 // Middleware to check if user is logged in
 export const requireLogin = (req, res, next) => {
-    if (!req.session.user_id) {
+    if (!req.session.user_id && !req.user) {
         req.flash('error', 'You must be signed in first!');
         return res.redirect('/login');
     }
