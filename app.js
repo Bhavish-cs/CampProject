@@ -102,7 +102,12 @@ app.use(authRoutes);
 
 // Home Route
 app.get('/', (req, res) => {
-    res.send('HELLO FROM CAMP!');
+    // If user is logged in, redirect to campgrounds
+    if (req.session.user_id || req.user) {
+        return res.redirect('/campgrounds');
+    }
+    // If not logged in, show landing page
+    res.render('home');
 });
 
 // Create campground
@@ -125,7 +130,7 @@ app.post('/campgrounds', isLoggedIn, upload.single('image'), validateCampground,
 
 
 // List campgrounds
-app.get('/campgrounds', catchAsync(async (req, res) => {
+app.get('/campgrounds', isLoggedIn, catchAsync(async (req, res) => {
     const campgrounds = await Campground.find({}).populate('author');
     res.render('campgrounds/index', { campgrounds });
 }));
@@ -138,7 +143,7 @@ app.get('/campgrounds/new', isLoggedIn, (req, res) => {
 
 
 
-app.get('/campgrounds/:id', catchAsync(async (req, res) => {
+app.get('/campgrounds/:id', isLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
 
     // Check if ID is a valid Mongo ObjectId

@@ -169,7 +169,7 @@ router.post('/resend-otp', catchAsync(async (req, res) => {
 // Logout
 router.get('/logout', (req, res) => {
     // Store success message before destroying session
-    const successMessage = 'Logged out successfully!';
+    const successMessage = 'Logged out successfully! Come back anytime.';
 
     // Clear manual session data first
     req.session.user_id = null;
@@ -182,15 +182,15 @@ router.get('/logout', (req, res) => {
             if (err) {
                 console.error('Passport logout error:', err);
                 req.flash('error', 'Error during logout');
-                return res.redirect('/campgrounds');
+                return res.redirect('/');
             }
             req.flash('success', successMessage);
-            res.redirect('/campgrounds');
+            res.redirect('/');
         });
     } else {
         // Direct session logout for email/OTP users
         req.flash('success', successMessage);
-        res.redirect('/campgrounds');
+        res.redirect('/');
     }
 });
 
