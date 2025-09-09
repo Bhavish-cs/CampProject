@@ -1,46 +1,118 @@
 <% layout('layouts/boilerplate') %>
 
-    <div class="auth-container">
+    <!-- Include Lottie Web Library -->
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+    <style>
+        .otp-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: calc(100vh - 76px);
+            padding: 2rem 0;
+        }
+
+        .otp-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .otp-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            text-align: center;
+            color: white;
+        }
+
+        .otp-body {
+            padding: 3rem;
+            text-align: center;
+        }
+
+        .lottie-animation {
+            max-width: 200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .otp-title {
+            color: #333;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .email-highlight {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .otp-header {
+                padding: 1.5rem;
+            }
+
+            .otp-body {
+                padding: 2rem;
+            }
+        }
+    </style>
+
+    <div class="otp-container">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-md-5 col-lg-4">
-                    <div class="auth-card">
-                        <h2 class="auth-title">Verify Your Email</h2>
-                        <p class="auth-subtitle">We sent a 6-digit code to<br><strong>
-                                <%= email %>
-                            </strong></p>
-
-                        <!-- OTP Verification Form -->
-                        <form action="/verify-otp" method="POST">
-                            <div class="form-floating">
-                                <input type="text" class="form-control text-center" id="otp" name="otp"
-                                    placeholder="000000" maxlength="6" pattern="[0-9]{6}" required
-                                    style="font-size: 24px; letter-spacing: 8px; font-weight: 600;">
-                                <label for="otp">Enter 6-digit OTP</label>
-                                <div class="form-text-enhanced">
-                                    <i class="bi bi-clock"></i>
-                                    Code expires in 10 minutes
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn btn-auth-success w-100 mb-3">
-                                Verify & Sign In
-                            </button>
-                        </form>
-
-                        <!-- Resend OTP -->
-                        <div class="text-center mb-3">
-                            <form action="/resend-otp" method="POST" class="d-inline">
-                                <button type="submit" class="btn btn-link auth-link p-0" style="font-size: 0.9rem;">
-                                    Didn't receive the code? Resend OTP
-                                </button>
-                            </form>
+                <div class="col-lg-8">
+                    <div class="otp-card">
+                        <!-- Header with Animation -->
+                        <div class="otp-header">
+                            <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_V9t630.json"
+                                background="transparent" speed="1" class="lottie-animation" loop autoplay>
+                            </lottie-player>
+                            <h3 class="mt-3 mb-0">Check Your Email</h3>
+                            <p class="mb-0 opacity-75">We've sent a verification code</p>
                         </div>
 
-                        <div class="text-center">
-                            <a href="/login" class="auth-link">
-                                <i class="bi bi-arrow-left"></i> Back to Sign In
-                            </a>
+                        <!-- Body -->
+                        <div class="otp-body">
+                            <h4 class="otp-title">Verify OTP</h4>
+                            <p class="text-muted mb-4">
+                                We sent a 6-digit code to
+                                <span class="email-highlight">
+                                    <%= email %>
+                                </span>
+                            </p>
+
+                            <form action="/verify-otp" method="POST">
+                                <div class="mb-4">
+                                    <label for="otp" class="form-label fw-semibold">Enter 6-digit OTP</label>
+                                    <input type="text" class="form-control text-center mx-auto" id="otp" name="otp"
+                                        maxlength="6" pattern="[0-9]{6}" required
+                                        style="font-size: 28px; letter-spacing: 8px; font-weight: bold; max-width: 280px; height: 60px; border: 2px solid #e0e0e0; border-radius: 10px;">
+                                    <div class="form-text mt-3">
+                                        <i class="bi bi-info-circle"></i>
+                                        Enter the 6-digit code from your email
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 py-3 fw-bold mb-3"
+                                    style="border-radius: 10px; font-size: 16px;">
+                                    <i class="bi bi-shield-check me-2"></i>Verify & Login
+                                </button>
+                            </form>
+
+                            <div class="mb-3">
+                                <form action="/resend-otp" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-clockwise me-2"></i>Resend OTP
+                                    </button>
+                                </form>
+                            </div>
+
+                            <div class="text-center">
+                                <a href="/login" class="text-decoration-none">
+                                    <i class="bi bi-arrow-left me-1"></i>Back to Login
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -49,41 +121,14 @@
     </div>
 
     <script>
-        // Enhanced OTP input functionality
-        document.addEventListener('DOMContentLoaded', function () {
-            const otpInput = document.getElementById('otp');
+        // Auto-focus OTP input and format
+        document.getElementById('otp').addEventListener('input', function (e) {
+            // Only allow numbers
+            this.value = this.value.replace(/[^0-9]/g, '');
 
-            // Auto-focus OTP input
-            otpInput.focus();
-
-            otpInput.addEventListener('input', function (e) {
-                // Only allow numbers
-                this.value = this.value.replace(/[^0-9]/g, '');
-
-                // Auto-submit when 6 digits are entered
-                if (this.value.length === 6) {
-                    // Add loading state
-                    const submitBtn = document.querySelector('button[type="submit"]');
-                    submitBtn.classList.add('btn-loading');
-                    submitBtn.textContent = 'Verifying...';
-
-                    // Submit form
-                    setTimeout(() => {
-                        this.form.submit();
-                    }, 500);
-                }
-            });
-
-            // Handle paste event
-            otpInput.addEventListener('paste', function (e) {
-                e.preventDefault();
-                const paste = (e.clipboardData || window.clipboardData).getData('text');
-                const numbers = paste.replace(/[^0-9]/g, '').substring(0, 6);
-                this.value = numbers;
-
-                if (numbers.length === 6) {
-                    this.form.submit();
-                }
-            });
+            // Auto-submit when 6 digits are entered
+            if (this.value.length === 6) {
+                this.form.submit();
+            }
         });
     </script>
