@@ -4,6 +4,13 @@ const Schema = mongoose.Schema;
 
 const campgroundSchema = new Schema({
     title: String,
+    images: [
+        {
+            url: String,
+            filename: String
+        }
+    ],
+    // Keep the old image field for backward compatibility during migration
     image: String,
     price: Number, // Changed to Number for price
     description: String,
@@ -22,6 +29,14 @@ const campgroundSchema = new Schema({
         type: Date,
         default: Date.now
     }
+});
+
+// Virtual to provide fallback image for backward compatibility
+campgroundSchema.virtual('primaryImage').get(function () {
+    if (this.images && this.images.length > 0) {
+        return this.images[0].url;
+    }
+    return this.image || '/uploads/placeholder.jpg';
 });
 
 // Middleware to delete all reviews when a campground is deleted

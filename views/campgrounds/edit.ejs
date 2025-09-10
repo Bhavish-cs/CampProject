@@ -14,12 +14,32 @@
                         value="<%= campground.location %>" required>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label" for="image">Image File</label>
-                    <input class="form-control" type="file" id="image" name="image">
-                    <% if (campground.image) { %>
-                        <img src="<%= campground.image %>" alt="Current Image" class="img-fluid mt-2"
-                            style="max-width: 200px;">
-                        <% } %>
+                    <label class="form-label" for="images">Add New Images (Max 3 total)</label>
+                    <input class="form-control" type="file" id="images" name="images" multiple accept="image/*">
+                    <div class="form-text">Select additional images (current + new cannot exceed 3 total).</div>
+
+                    <!-- Display current images -->
+                    <% if (campground.images && campground.images.length> 0) { %>
+                        <div class="mt-3">
+                            <h6>Current Images:</h6>
+                            <div class="row">
+                                <% campground.images.forEach((img, index)=> { %>
+                                    <div class="col-md-4 mb-2">
+                                        <img src="<%= img.url %>" alt="Current Image <%= index + 1 %>"
+                                            class="img-fluid rounded"
+                                            style="height: 150px; object-fit: cover; width: 100%;">
+                                    </div>
+                                    <% }) %>
+                            </div>
+                        </div>
+                        <% } else if (campground.image) { %>
+                            <!-- Fallback for old single image format -->
+                            <div class="mt-3">
+                                <h6>Current Image:</h6>
+                                <img src="<%= campground.image %>" alt="Current Image" class="img-fluid rounded"
+                                    style="max-width: 200px;">
+                            </div>
+                            <% } %>
                 </div>
                 <div class="mb-3">
                     <label for="validationCustomUsername" class="form-label">Price</label>

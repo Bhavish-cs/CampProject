@@ -12,22 +12,22 @@ export const isAuthor = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { default: Campground } = await import('../models/campground.js');
-        
+
         const campground = await Campground.findById(id).populate('author');
-        
+
         if (!campground) {
             req.flash('error', 'Campground not found!');
             return res.redirect('/campgrounds');
         }
-        
+
         // Get current user ID from session or passport
         const currentUserId = req.session.user_id || req.user?._id;
-        
+
         if (!currentUserId || !campground.author || campground.author._id.toString() !== currentUserId.toString()) {
             req.flash('error', 'You do not have permission to do that!');
             return res.redirect(`/campgrounds/${id}`);
         }
-        
+
         next();
     } catch (error) {
         console.error('Authorization error:', error);

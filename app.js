@@ -36,10 +36,24 @@ const app = express();
 
 const upload = multer({
     dest: 'uploads/',
+    limits: {
+        fileSize: 10 * 1024 * 1024, // 10MB limit per file
+        files: 3 // Maximum 3 files
+    },
     fileFilter: (req, file, cb) => {
+        // Check if file is an image
         if (!file.mimetype.startsWith('image/')) {
-            return cb(new Error('Only image files are allowed!'), false);
+            return cb(new ExpressError('Only image files are allowed!', 400), false);
         }
+
+        // Check file extension
+        const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+        const fileExtension = path.extname(file.originalname).toLowerCase();
+
+        if (!allowedExtensions.includes(fileExtension)) {
+            return cb(new ExpressError('Only JPG, JPEG, PNG, GIF, and WEBP files are allowed!', 400), false);
+        }
+
         cb(null, true);
     }
 });
@@ -71,8 +85,8 @@ app.use(passport.session());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use('/uploads', express.static('uploads'));
-
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/js', express.static(path.join(__dirname, 'public/js')));
 
 // Flash messages middleware (MUST be before routes)
 app.use((req, res, next) => {
@@ -86,6 +100,25 @@ app.use((req, res, next) => {
     next();
 });
 
+// Multer error handling middleware
+app.use((error, req, res, next) => {
+    if (error instanceof multer.MulterError) {
+        if (error.code === 'LIMIT_FILE_SIZE') {
+            req.flash('error', 'File size too large! Maximum 10MB per file.');
+            return res.redirect('back');
+        }
+        if (error.code === 'LIMIT_FILE_COUNT') {
+            req.flash('error', 'Too many files! Maximum 3 files allowed.');
+            return res.redirect('back');
+        }
+        if (error.code === 'LIMIT_UNEXPECTED_FILE') {
+            req.flash('error', 'Unexpected file field.');
+            return res.redirect('back');
+        }
+    }
+    next(error);
+});
+
 // Auth routes
 app.use(authRoutes);
 
@@ -94,18 +127,80 @@ app.get('/', (req, res) => {
     res.send('HELLO FROM CAMP!');
 });
 
-// Create campground
-app.post('/campgrounds', isLoggedIn, upload.single('image'), validateCampground, catchAsync(async (req, res) => {
-    const campgroundData = req.body.campground;
-    const newCampground = new Campground(campgroundData);
-    
-    // Set the author to the current logged-in user
-    newCampground.author = getUserId(req);
-    
-    await newCampground.save();
-    req.flash('success', 'Successfully created a new campground!');
-    res.redirect(`/campgrounds/${newCampground._id}`);
+// Test route to check campground images
+app.get('/test-images', catchAsync(async (req, res) => {
+    const campgrounds = await Campground.find({});
+    let result = '<h1>Campground Images Test</h1>';
+
+    campgrounds.forEach(camp => {
+        result += `<h3>${camp.title}</h3>`;
+        result += `<p>Old image field: ${camp.image || 'None'}</p>`;
+        result += `<p>New images array: ${camp.images ? camp.images.length : 0} images</p>`;
+        if (camp.images && camp.images.length > 0) {
+            result += '<ul>';
+            camp.images.forEach((img, index) => {
+                result += `<li>Image ${index + 1}: ${img.url}</li>`;
+            });
+            result += '</ul>';
+        }
+        result += '<hr>';
+    });
+
+    res.send(result);
 }));
+
+// Create campground
+app.post('/campgrounds', isLoggedIn, (req, res, next) => {
+    upload.array('images', 3)(req, res, (err) => {
+        if (err) {
+            if (err instanceof multer.MulterError) {
+                if (err.code === 'LIMIT_FILE_SIZE') {
+                    req.flash('error', 'File size too large! Maximum 10MB per file.');
+                    return res.redirect('/campgrounds/new');
+                }
+                if (err.code === 'LIMIT_FILE_COUNT') {
+                    req.flash('error', 'Too many files! Maximum 3 files allowed.');
+                    return res.redirect('/campgrounds/new');
+                }
+            }
+            req.flash('error', err.message);
+            return res.redirect('/campgrounds/new');
+        }
+
+        // Proceed with validation and campground creation
+        validateCampground(req, res, (validationErr) => {
+            if (validationErr) {
+                req.flash('error', validationErr.message);
+                return res.redirect('/campgrounds/new');
+            }
+
+            catchAsync(async (req, res) => {
+                console.log('Files received:', req.files ? req.files.length : 0);
+                console.log('File details:', req.files);
+
+                const campgroundData = req.body.campground;
+                const newCampground = new Campground(campgroundData);
+
+                // Handle multiple image uploads
+                if (req.files && req.files.length > 0) {
+                    newCampground.images = req.files.map(file => ({
+                        url: `/uploads/${file.filename}`,
+                        filename: file.filename
+                    }));
+                    console.log('Images assigned to campground:', newCampground.images);
+                }
+
+                // Set the author to the current logged-in user
+                newCampground.author = getUserId(req);
+
+                await newCampground.save();
+                console.log('Campground saved with images:', newCampground.images);
+                req.flash('success', 'Successfully created a new campground!');
+                res.redirect(`/campgrounds/${newCampground._id}`);
+            })(req, res, next);
+        });
+    });
+});
 
 
 // List campgrounds
@@ -182,8 +277,7 @@ app.get('/campgrounds/:id/edit', isLoggedIn, isAuthor, catchAsync(async (req, re
 }));
 
 // Update campground
-
-app.put('/campgrounds/:id', isLoggedIn, isAuthor, upload.single('image'), validateCampground, catchAsync(async (req, res) => {
+app.put('/campgrounds/:id', isLoggedIn, isAuthor, upload.array('images', 3), validateCampground, catchAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
 
@@ -196,8 +290,23 @@ app.put('/campgrounds/:id', isLoggedIn, isAuthor, upload.single('image'), valida
     campground.price = req.body.campground.price;
     campground.description = req.body.campground.description;
 
-    if (req.file) {
-        campground.image = `/uploads/${req.file.filename}`;
+    // Handle new image uploads
+    if (req.files && req.files.length > 0) {
+        const newImages = req.files.map(file => ({
+            url: `/uploads/${file.filename}`,
+            filename: file.filename
+        }));
+
+        // Add new images to existing ones (or replace if none exist)
+        if (!campground.images || campground.images.length === 0) {
+            campground.images = newImages;
+        } else {
+            campground.images.push(...newImages);
+            // Limit to 3 images total
+            if (campground.images.length > 3) {
+                campground.images = campground.images.slice(0, 3);
+            }
+        }
     }
 
     await campground.save();
