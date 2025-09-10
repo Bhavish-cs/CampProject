@@ -24,14 +24,18 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label" for="image">Image File</label>
-                    <input class="form-control" type="file" id="image" name="image" required>
+                    <label class="form-label" for="images">Image Files (Max 3, 10MB each)</label>
+                    <input class="form-control" type="file" id="images" name="images" multiple accept="image/*"
+                        required>
+                    <div class="form-text">Select 1-3 image files (JPG, PNG, GIF, WEBP). Maximum 10MB per file.</div>
                     <div class="valid-feedback">
                         Looks good!
                     </div>
                     <div class="invalid-feedback">
-                        Please select an image file.
+                        Please select at least one image file.
                     </div>
+                    <!-- Image Preview Container -->
+                    <div id="image-preview"></div>
                 </div>
                 <div class="mb-3">
                     <label for="validationCustomUsername" class="form-label">Price</label>

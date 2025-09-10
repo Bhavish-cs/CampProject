@@ -10,20 +10,20 @@ mongoose.connect('mongodb://localhost:27017/yelp-camp')
 const assignAuthorsToExistingCampgrounds = async () => {
     try {
         console.log('Starting migration: Assigning authors to existing campgrounds...');
-        
+
         // Find campgrounds without authors
         const campgroundsWithoutAuthors = await Campground.find({ author: { $exists: false } });
-        
+
         if (campgroundsWithoutAuthors.length === 0) {
             console.log('✅ All campgrounds already have authors assigned.');
             return;
         }
-        
+
         console.log(`Found ${campgroundsWithoutAuthors.length} campgrounds without authors.`);
-        
+
         // Get the first user from the database (or create one if none exists)
         let defaultUser = await User.findOne();
-        
+
         if (!defaultUser) {
             console.log('No users found. Creating a default user...');
             defaultUser = new User({
@@ -33,17 +33,17 @@ const assignAuthorsToExistingCampgrounds = async () => {
             await defaultUser.save();
             console.log('✅ Default user created.');
         }
-        
+
         console.log(`Using user "${defaultUser.username}" (${defaultUser.email}) as default author.`);
-        
+
         // Update all campgrounds without authors
         const updateResult = await Campground.updateMany(
             { author: { $exists: false } },
             { $set: { author: defaultUser._id } }
         );
-        
+
         console.log(`✅ Migration completed! Updated ${updateResult.modifiedCount} campgrounds.`);
-        
+
     } catch (error) {
         console.error('❌ Migration failed:', error);
     } finally {

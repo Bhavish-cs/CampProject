@@ -6,30 +6,32 @@ const campgroundSchema = Joi.object({
     campground: Joi.object({
         title: Joi.string().required(),
         price: Joi.number().required().min(0),
-        image: Joi.string().required(),
         location: Joi.string().required(),
         description: Joi.string().required()
     }).required()
 });
 
 export default function validateCampground(req, res, next) {
-    // Attach uploaded file path to req.body.campground.image if present
-    if (req.file) {
-        if (!req.body.campground) req.body.campground = {};
-        req.body.campground.image = `/uploads/${req.file.filename}`;
+    // For new campgrounds, require at least one image upload
+    const isNewCampground = req.method === 'POST' && req.url === '/campgrounds';
+    if (isNewCampground && (!req.files || req.files.length === 0) && !req.file) {
+        req.flash('error', 'At least one image is required');
+        return res.redirect('/campgrounds/new');
     }
 
     const { error } = campgroundSchema.validate(req.body);
 
     if (error) {
         const msg = error.details.map(el => el.message).join(', ');
-        throw new ExpressError(msg, 400);
+        req.flash('error', msg);
+        return res.redirect(isNewCampground ? '/campgrounds/new' : 'back');
     }
 
-    // Additional price check (optional if you trust Joi's number validation)
+    // Additional price check
     const price = req.body.campground.price;
     if (isNaN(Number(price)) || price === '') {
-        return next(new ExpressError('Price must be a number', 400));
+        req.flash('error', 'Price must be a valid number');
+        return res.redirect(isNewCampground ? '/campgrounds/new' : 'back');
     }
 
     next();
