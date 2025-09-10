@@ -4,6 +4,7 @@ import path, { dirname } from 'path';
 import mongoose from 'mongoose';
 import Campground from './models/campground.js';
 import Review from './models/review.js';
+import authRoutes from './routes/auth.js';
 import { fileURLToPath } from 'url';
 import ejsMate from 'ejs-mate';
 import Joi from 'joi';
@@ -12,18 +13,15 @@ import multer from 'multer';
 import catchAsync from './utils/catchAsync.js';
 import ExpressError from './utils/ExpressError.js';
 import validateCampground from './middlewares/validateCampground.js';
-import { isLoggedIn, isAuthor, isReviewAuthor } from './middlewares/auth.js';
+import { isLoggedIn, isAuthor, getUserId } from './middlewares/authorization.js';
 import { title } from 'process';
 import session from 'express-session';
 import flash from 'connect-flash';
+import passport from './config/passport.js';
 import dotenv from 'dotenv';
 
-// Load environment variables FIRST
+// Load environment variables
 dotenv.config();
-
-// Import passport AFTER loading env vars
-import passport from './config/passport.js';
-import authRoutes from './routes/auth.js';
 
 // Fix __dirname and __filename for ESM
 const __filename = fileURLToPath(import.meta.url);
@@ -66,7 +64,7 @@ const sessionConfig = {
 app.use(session(sessionConfig));
 app.use(flash());
 
-// Passport middleware
+// Initialize Passport middleware (must be after session)
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -83,17 +81,8 @@ app.use((req, res, next) => {
     res.locals.warning = req.flash('warning');
     res.locals.info = req.flash('info');
     // Make user info available in all templates
-    // Handle both Google OAuth users and session users
-    if (req.user) {
-        res.locals.currentUser = req.user;
-        res.locals.username = req.user.username;
-    } else if (req.session.user_id) {
-        res.locals.currentUser = { _id: req.session.user_id };
-        res.locals.username = req.session.username;
-    } else {
-        res.locals.currentUser = null;
-        res.locals.username = null;
-    }
+    res.locals.currentUser = req.session.user_id;
+    res.locals.username = req.session.username;
     next();
 });
 
@@ -102,27 +91,17 @@ app.use(authRoutes);
 
 // Home Route
 app.get('/', (req, res) => {
-    // If user is logged in, redirect to campgrounds
-    if (req.session.user_id || req.user) {
-        return res.redirect('/campgrounds');
-    }
-    // If not logged in, show landing page
-    res.render('home');
+    res.send('HELLO FROM CAMP!');
 });
 
 // Create campground
 app.post('/campgrounds', isLoggedIn, upload.single('image'), validateCampground, catchAsync(async (req, res) => {
     const campgroundData = req.body.campground;
     const newCampground = new Campground(campgroundData);
-
-    // Add current user as author - handle both auth types
-    const currentUserId = req.session.user_id || (req.user ? req.user._id : null);
-    newCampground.author = currentUserId;
-
-    if (req.file) {
-        newCampground.image = `/uploads/${req.file.filename}`;
-    }
-
+    
+    // Set the author to the current logged-in user
+    newCampground.author = getUserId(req);
+    
     await newCampground.save();
     req.flash('success', 'Successfully created a new campground!');
     res.redirect(`/campgrounds/${newCampground._id}`);
@@ -130,8 +109,8 @@ app.post('/campgrounds', isLoggedIn, upload.single('image'), validateCampground,
 
 
 // List campgrounds
-app.get('/campgrounds', isLoggedIn, catchAsync(async (req, res) => {
-    const campgrounds = await Campground.find({}).populate('author');
+app.get('/campgrounds', catchAsync(async (req, res) => {
+    const campgrounds = await Campground.find({});
     res.render('campgrounds/index', { campgrounds });
 }));
 
@@ -143,7 +122,7 @@ app.get('/campgrounds/new', isLoggedIn, (req, res) => {
 
 
 
-app.get('/campgrounds/:id', isLoggedIn, catchAsync(async (req, res) => {
+app.get('/campgrounds/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
 
     // Check if ID is a valid Mongo ObjectId
@@ -152,15 +131,8 @@ app.get('/campgrounds/:id', isLoggedIn, catchAsync(async (req, res) => {
         return res.redirect('/campgrounds');
     }
 
-    // Fetch campground from DB and populate reviews with their authors, and campground author
-    const campground = await Campground.findById(id)
-        .populate({
-            path: 'reviews',
-            populate: {
-                path: 'author'
-            }
-        })
-        .populate('author');
+    // Fetch campground from DB and populate reviews and author
+    const campground = await Campground.findById(id).populate('reviews').populate('author');
 
     // If not found, send 404
     if (!campground) {
@@ -181,8 +153,11 @@ app.get('/campgrounds/:id', isLoggedIn, catchAsync(async (req, res) => {
         return 'just now';
     }
 
+    // Get current user ID for authorization checks in view
+    const currentUserId = getUserId(req);
+
     // Render the show page
-    res.render('campgrounds/show', { campground, timeAgo });
+    res.render('campgrounds/show', { campground, timeAgo, currentUserId });
 }));
 
 
@@ -253,7 +228,7 @@ app.delete('/campgrounds/:id', isLoggedIn, isAuthor, catchAsync(async (req, res)
 }));
 
 // POST route to handle review submission
-app.post('/campgrounds/:id/reviews', isLoggedIn, catchAsync(async (req, res) => {
+app.post('/campgrounds/:id/reviews', catchAsync(async (req, res) => {
     const { id } = req.params;
 
     // Check if ID is a valid Mongo ObjectId
@@ -287,13 +262,9 @@ app.post('/campgrounds/:id/reviews', isLoggedIn, catchAsync(async (req, res) => 
         throw new ExpressError('Review cannot exceed 500 characters', 400);
     }
 
-    // Get current user ID from either session or passport
-    const currentUserId = req.session.user_id || (req.user ? req.user._id : null);
-
     const review = new Review({
         body: body.trim(),
         rating: parseInt(rating),
-        author: currentUserId,
         campground: id
     });
 
@@ -305,7 +276,7 @@ app.post('/campgrounds/:id/reviews', isLoggedIn, catchAsync(async (req, res) => 
 }));
 
 // DELETE route to handle review deletion
-app.delete('/campgrounds/:id/reviews/:reviewId', isLoggedIn, isReviewAuthor, catchAsync(async (req, res) => {
+app.delete('/campgrounds/:id/reviews/:reviewId', catchAsync(async (req, res) => {
     const { id, reviewId } = req.params;
 
     // Check if both IDs are valid Mongo ObjectIds
