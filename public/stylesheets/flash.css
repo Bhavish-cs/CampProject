@@ -1,82 +1,284 @@
-/* Custom Flash Message Styles */
-.alert {
+/* Professional Flash Message System with Glass Morphism */
+.flash-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 400px;
+    min-width: 320px;
+    margin-bottom: 1rem;
+    animation: slideInRight 0.6s ease-out;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.12),
+        0 4px 16px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    overflow: hidden;
+}
+
+.flash-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 20px;
+    position: relative;
+}
+
+.flash-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+}
+
+.flash-icon-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+}
+
+.flash-message {
+    flex: 1;
+    margin-top: 5px;
+}
+
+.flash-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.025em;
+}
+
+.flash-text {
+    font-size: 0.95rem;
+    margin: 0;
+    line-height: 1.5;
+    opacity: 0.95;
+}
+
+.flash-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.2);
     border: none;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    margin-bottom: 1.5rem;
-    font-weight: 500;
-    animation: slideInDown 0.4s ease-out;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
 }
 
-
-/* Modern, aesthetic gradients for flash messages */
-.alert-success {
-    background: linear-gradient(120deg, #43e97b 0%, #38f9d7 100%);
-    color: #fff;
-    border-left: 6px solid #1fa463;
-    box-shadow: 0 2px 16px 0 rgba(67, 233, 123, 0.15);
+.flash-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
 }
 
-.alert-danger {
-    background: linear-gradient(120deg, #ff5858 0%, #f09819 100%);
-    color: #fff;
-    border-left: 6px solid #c82333;
-    box-shadow: 0 2px 16px 0 rgba(255, 88, 88, 0.15);
+.flash-close i {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.9);
 }
 
-.alert-warning {
-    background: linear-gradient(120deg, #f7971e 0%, #ffd200 100%);
-    color: #fff;
-    border-left: 6px solid #e6b800;
-    box-shadow: 0 2px 16px 0 rgba(255, 210, 0, 0.12);
+/* Success Flash Message - Vibrant Green */
+.flash-success {
+    background: linear-gradient(135deg,
+            rgba(34, 197, 94, 0.9) 0%,
+            rgba(59, 130, 246, 0.9) 50%,
+            rgba(16, 185, 129, 0.9) 100%);
+    color: white;
 }
 
-.alert-info {
-    background: linear-gradient(120deg, #56ccf2 0%, #2f80ed 100%);
-    color: #fff;
-    border-left: 6px solid #2176ae;
-    box-shadow: 0 2px 16px 0 rgba(44, 123, 229, 0.12);
+.flash-success::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #10b981, #22c55e, #06d6a0);
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
 }
 
-.alert i {
-    font-size: 1.2rem;
+/* Error Flash Message - Dynamic Red */
+.flash-error {
+    background: linear-gradient(135deg,
+            rgba(239, 68, 68, 0.9) 0%,
+            rgba(244, 63, 94, 0.9) 50%,
+            rgba(251, 113, 133, 0.9) 100%);
+    color: white;
 }
 
-.alert .btn-close {
-    filter: brightness(0) invert(1);
-    opacity: 0.8;
+.flash-error::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ef4444, #f43f5e, #fb7185);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
 }
 
-.alert .btn-close:hover {
-    opacity: 1;
+/* Warning Flash Message - Vibrant Orange/Yellow */
+.flash-warning {
+    background: linear-gradient(135deg,
+            rgba(245, 158, 11, 0.9) 0%,
+            rgba(251, 191, 36, 0.9) 50%,
+            rgba(252, 176, 64, 0.9) 100%);
+    color: white;
 }
 
-/* Animation for flash messages */
-@keyframes slideInDown {
+.flash-warning::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #f59e0b, #fbbf24, #fcb040);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+}
+
+/* Info Flash Message - Cool Blue/Cyan */
+.flash-info {
+    background: linear-gradient(135deg,
+            rgba(59, 130, 246, 0.9) 0%,
+            rgba(14, 165, 233, 0.9) 50%,
+            rgba(6, 182, 212, 0.9) 100%);
+    color: white;
+}
+
+.flash-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #3b82f6, #0ea5e9, #06b6d4);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+/* No Data Flash Message - Elegant Purple/Gray */
+.flash-no-data {
+    background: linear-gradient(135deg,
+            rgba(139, 69, 19, 0.85) 0%,
+            rgba(75, 85, 99, 0.85) 50%,
+            rgba(107, 114, 128, 0.85) 100%);
+    color: white;
+    max-width: 450px;
+}
+
+.flash-no-data::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #8b4513, #4b5563, #6b7280);
+    box-shadow: 0 0 20px rgba(139, 69, 19, 0.4);
+}
+
+/* Enhanced Animations */
+@keyframes slideInRight {
     0% {
-        transform: translateY(-100%);
+        transform: translateX(100%);
         opacity: 0;
     }
 
     100% {
-        transform: translateY(0);
+        transform: translateX(0);
         opacity: 1;
     }
 }
 
-/* Auto-hide animation */
-.alert.auto-hide {
-    animation: slideInDown 0.4s ease-out, fadeOut 0.5s ease-in 4s forwards;
-}
-
-@keyframes fadeOut {
+@keyframes slideOutUp {
     0% {
+        transform: translateY(0) scale(1);
         opacity: 1;
-        transform: translateY(0);
     }
 
     100% {
+        transform: translateY(-20px) scale(0.95);
         opacity: 0;
-        transform: translateY(-100%);
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.flash-icon {
+    animation: pulse 2s infinite ease-in-out;
+}
+
+/* Hover Effects */
+.flash-container:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.15),
+        0 6px 20px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transition: all 0.3s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .flash-container {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        min-width: auto;
+    }
+
+    .flash-content {
+        padding: 15px;
+        gap: 12px;
+    }
+
+    .flash-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .flash-icon-large {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .flash-container {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .flash-close {
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    .flash-close:hover {
+        background: rgba(0, 0, 0, 0.3);
     }
 }
