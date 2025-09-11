@@ -1,45 +1,179 @@
+<!-- Success Flash Message -->
 <% if(success && success.length) { %>
-    <div class="alert alert-success alert-dismissible fade show auto-hide" role="alert">
-        <i class="bi bi-check-circle-fill me-2"></i>
-        <%= success %>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="flash-container flash-success" role="alert">
+        <div class="flash-content">
+            <div class="flash-icon">
+                <div class="lottie-success" id="success-lottie"></div>
+            </div>
+            <div class="flash-message">
+                <h6 class="flash-title">Success!</h6>
+                <p class="flash-text">
+                    <%= success %>
+                </p>
+            </div>
+            <button type="button" class="flash-close" onclick="closeFlashMessage(this)">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
     </div>
     <% } %>
 
+        <!-- Error Flash Message -->
         <% if(error && error.length) { %>
-            <div class="alert alert-danger alert-dismissible fade show auto-hide" role="alert">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                <%= error %>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <div class="flash-container flash-error" role="alert">
+                <div class="flash-content">
+                    <div class="flash-icon">
+                        <div class="lottie-error" id="error-lottie"></div>
+                    </div>
+                    <div class="flash-message">
+                        <h6 class="flash-title">Error!</h6>
+                        <p class="flash-text">
+                            <%= error %>
+                        </p>
+                    </div>
+                    <button type="button" class="flash-close" onclick="closeFlashMessage(this)">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
             </div>
             <% } %>
 
+                <!-- Warning Flash Message -->
                 <% if(warning && warning.length) { %>
-                    <div class="alert alert-warning alert-dismissible fade show auto-hide" role="alert">
-                        <i class="bi bi-exclamation-circle-fill me-2"></i>
-                        <%= warning %>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <div class="flash-container flash-warning" role="alert">
+                        <div class="flash-content">
+                            <div class="flash-icon">
+                                <div class="lottie-warning" id="warning-lottie"></div>
+                            </div>
+                            <div class="flash-message">
+                                <h6 class="flash-title">Warning!</h6>
+                                <p class="flash-text">
+                                    <%= warning %>
+                                </p>
+                            </div>
+                            <button type="button" class="flash-close" onclick="closeFlashMessage(this)">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </div>
                     </div>
                     <% } %>
 
+                        <!-- Info Flash Message -->
                         <% if(info && info.length) { %>
-                            <div class="alert alert-info alert-dismissible fade show auto-hide" role="alert">
-                                <i class="bi bi-info-circle-fill me-2"></i>
-                                <%= info %>
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                        aria-label="Close"></button>
+                            <div class="flash-container flash-info" role="alert">
+                                <div class="flash-content">
+                                    <div class="flash-icon">
+                                        <div class="lottie-info" id="info-lottie"></div>
+                                    </div>
+                                    <div class="flash-message">
+                                        <h6 class="flash-title">Information</h6>
+                                        <p class="flash-text">
+                                            <%= info %>
+                                        </p>
+                                    </div>
+                                    <button type="button" class="flash-close" onclick="closeFlashMessage(this)">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </div>
                             </div>
                             <% } %>
 
-                                <script>
-                                    // Auto-hide flash messages after 5 seconds
-                                    document.addEventListener('DOMContentLoaded', function () {
-                                        const alerts = document.querySelectorAll('.alert.auto-hide');
-                                        alerts.forEach(alert => {
-                                            setTimeout(() => {
-                                                const bsAlert = new bootstrap.Alert(alert);
-                                                bsAlert.close();
-                                            }, 5000);
-                                        });
-                                    });
-                                </script>
+                                <!-- No Data Flash Message (Special case using the provided Lottie animation) -->
+                                <% if(locals.noData) { %>
+                                    <div class="flash-container flash-no-data" role="alert">
+                                        <div class="flash-content">
+                                            <div class="flash-icon flash-icon-large">
+                                                <div class="lottie-no-data" id="no-data-lottie"></div>
+                                            </div>
+                                            <div class="flash-message">
+                                                <h6 class="flash-title">No Data Found</h6>
+                                                <p class="flash-text">We couldn't find any results matching your
+                                                    request. Please try again or modify your search criteria.</p>
+                                            </div>
+                                            <button type="button" class="flash-close" onclick="closeFlashMessage(this)">
+                                                <i class="bi bi-x-lg"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <% } %>
+
+                                        <!-- Lottie Web Library -->
+                                        <script
+                                            src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+                                        <script>
+                                            // Professional Flash Message System with Lottie Animations
+                                            document.addEventListener('DOMContentLoaded', function () {
+                                                // Initialize all flash message animations
+                                                initializeFlashMessages();
+
+                                                // Auto-hide flash messages after 6 seconds
+                                                const flashContainers = document.querySelectorAll('.flash-container');
+                                                flashContainers.forEach(container => {
+                                                    setTimeout(() => {
+                                                        hideFlashMessage(container);
+                                                    }, 6000);
+                                                });
+                                            });
+
+                                            function initializeFlashMessages() {
+                                                // Success Lottie Animation (Checkmark)
+                                                const successContainer = document.getElementById('success-lottie');
+                                                if (successContainer) {
+                                                    successContainer.innerHTML = '<lottie-player src="https://assets9.lottiefiles.com/packages/lf20_jcikwtux.json" background="transparent" speed="1" style="width: 40px; height: 40px;" autoplay></lottie-player>';
+                                                }
+
+                                                // Error Lottie Animation (Cross/X)
+                                                const errorContainer = document.getElementById('error-lottie');
+                                                if (errorContainer) {
+                                                    errorContainer.innerHTML = '<lottie-player src="https://assets4.lottiefiles.com/packages/lf20_khzniaya.json" background="transparent" speed="1" style="width: 40px; height: 40px;" autoplay></lottie-player>';
+                                                }
+
+                                                // Warning Lottie Animation (Exclamation)
+                                                const warningContainer = document.getElementById('warning-lottie');
+                                                if (warningContainer) {
+                                                    warningContainer.innerHTML = '<lottie-player src="https://assets8.lottiefiles.com/packages/lf20_round_loader.json" background="transparent" speed="1" style="width: 40px; height: 40px;" autoplay></lottie-player>';
+                                                }
+
+                                                // Info Lottie Animation (Info icon)
+                                                const infoContainer = document.getElementById('info-lottie');
+                                                if (infoContainer) {
+                                                    infoContainer.innerHTML = '<lottie-player src="https://assets1.lottiefiles.com/packages/lf20_06a6pf9i.json" background="transparent" speed="1" style="width: 40px; height: 40px;" autoplay></lottie-player>';
+                                                }
+
+                                                // No Data Lottie Animation (Using the provided JSON)
+                                                const noDataContainer = document.getElementById('no-data-lottie');
+                                                if (noDataContainer) {
+                                                    // Load the custom no data found animation from local file
+                                                    fetch('/no data found json.json')
+                                                        .then(response => response.json())
+                                                        .then(animationData => {
+                                                            const player = document.createElement('lottie-player');
+                                                            player.style.width = '80px';
+                                                            player.style.height = '80px';
+                                                            player.background = 'transparent';
+                                                            player.speed = 1;
+                                                            player.autoplay = true;
+                                                            player.load(animationData);
+                                                            noDataContainer.appendChild(player);
+                                                        })
+                                                        .catch(error => {
+                                                            console.error('Error loading no-data animation:', error);
+                                                            // Fallback to a simple icon
+                                                            noDataContainer.innerHTML = '<i class="bi bi-inbox" style="font-size: 3rem; color: #6c757d;"></i>';
+                                                        });
+                                                }
+                                            }
+
+                                            function closeFlashMessage(button) {
+                                                const container = button.closest('.flash-container');
+                                                hideFlashMessage(container);
+                                            }
+
+                                            function hideFlashMessage(container) {
+                                                container.style.animation = 'slideOutUp 0.5s ease-in forwards';
+                                                setTimeout(() => {
+                                                    container.remove();
+                                                }, 500);
+                                            }
+                                        </script>

@@ -3,29 +3,32 @@
         <div class="col-8">
             <div class="card shadow-sm border-0 mb-4">
                 <!-- Image Carousel -->
-                <% if (campground.images && campground.images.length > 0) { %>
+                <% if (campground.images && campground.images.length> 0) { %>
                     <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
                         <div class="carousel-indicators">
-                            <% campground.images.forEach((img, index) => { %>
-                                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="<%= index %>" 
-                                        class="<%= index === 0 ? 'active' : '' %>" 
-                                        aria-current="<%= index === 0 ? 'true' : 'false' %>" 
-                                        aria-label="Slide <%= index + 1 %>"></button>
-                            <% }) %>
+                            <% campground.images.forEach((img, index)=> { %>
+                                <button type="button" data-bs-target="#carouselExampleIndicators"
+                                    data-bs-slide-to="<%= index %>" class="<%= index === 0 ? 'active' : '' %>"
+                                    aria-current="<%= index === 0 ? 'true' : 'false' %>"
+                                    aria-label="Slide <%= index + 1 %>"></button>
+                                <% }) %>
                         </div>
                         <div class="carousel-inner">
-                            <% campground.images.forEach((img, index) => { %>
+                            <% campground.images.forEach((img, index)=> { %>
                                 <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
-                                    <img src="<%= img.url %>" class="d-block w-100" alt="Campground Image <%= index + 1 %>"
-                                         style="object-fit:cover; height:320px; border-top-left-radius:0.5rem; border-top-right-radius:0.5rem;">
+                                    <img src="<%= img.url %>" class="d-block w-100"
+                                        alt="Campground Image <%= index + 1 %>"
+                                        style="object-fit:cover; height:320px; border-top-left-radius:0.5rem; border-top-right-radius:0.5rem;">
                                 </div>
-                            <% }) %>
+                                <% }) %>
                         </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+                            data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Previous</span>
                         </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+                            data-bs-slide="next">
                             <span class="carousel-control-next-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Next</span>
                         </button>

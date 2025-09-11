@@ -85,7 +85,14 @@ app.use(passport.session());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use('/uploads', express.static('uploads'));
+// Serve static files with proper headers
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve Lottie JSON file with proper content type
+app.get('/no\ data\ found\ json.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.sendFile(path.join(__dirname, 'public', 'no data found json.json'));
+});
 app.use('/js', express.static(path.join(__dirname, 'public/js')));
 
 // Flash messages middleware (MUST be before routes)
@@ -127,27 +134,39 @@ app.get('/', (req, res) => {
     res.send('HELLO FROM CAMP!');
 });
 
-// Test route to check campground images
-app.get('/test-images', catchAsync(async (req, res) => {
-    const campgrounds = await Campground.find({});
-    let result = '<h1>Campground Images Test</h1>';
+// Test routes for flash messages (Remove in production)
+app.get('/test-flash', (req, res) => {
+    const type = req.query.type || 'success';
 
-    campgrounds.forEach(camp => {
-        result += `<h3>${camp.title}</h3>`;
-        result += `<p>Old image field: ${camp.image || 'None'}</p>`;
-        result += `<p>New images array: ${camp.images ? camp.images.length : 0} images</p>`;
-        if (camp.images && camp.images.length > 0) {
-            result += '<ul>';
-            camp.images.forEach((img, index) => {
-                result += `<li>Image ${index + 1}: ${img.url}</li>`;
-            });
-            result += '</ul>';
-        }
-        result += '<hr>';
+    switch (type) {
+        case 'success':
+            req.flash('success', 'Your campground has been successfully created! Welcome to our community.');
+            break;
+        case 'error':
+            req.flash('error', 'Unable to create campground. Please check your input and try again.');
+            break;
+        case 'warning':
+            req.flash('warning', 'Your session will expire in 5 minutes. Please save your work.');
+            break;
+        case 'info':
+            req.flash('info', 'New features have been added to the platform. Check them out!');
+            break;
+        case 'nodata':
+            res.locals.noData = true;
+            break;
+    }
+
+    res.redirect('/campgrounds');
+});
+
+// Test route specifically for no-data scenario
+app.get('/test-no-data', (req, res) => {
+    res.render('campgrounds/index', {
+        campgrounds: [],
+        noData: true,
+        title: 'All Campgrounds'
     });
-
-    res.send(result);
-}));
+});
 
 // Create campground
 app.post('/campgrounds', isLoggedIn, (req, res, next) => {
@@ -175,9 +194,6 @@ app.post('/campgrounds', isLoggedIn, (req, res, next) => {
             }
 
             catchAsync(async (req, res) => {
-                console.log('Files received:', req.files ? req.files.length : 0);
-                console.log('File details:', req.files);
-
                 const campgroundData = req.body.campground;
                 const newCampground = new Campground(campgroundData);
 
@@ -187,14 +203,12 @@ app.post('/campgrounds', isLoggedIn, (req, res, next) => {
                         url: `/uploads/${file.filename}`,
                         filename: file.filename
                     }));
-                    console.log('Images assigned to campground:', newCampground.images);
                 }
 
                 // Set the author to the current logged-in user
                 newCampground.author = getUserId(req);
 
                 await newCampground.save();
-                console.log('Campground saved with images:', newCampground.images);
                 req.flash('success', 'Successfully created a new campground!');
                 res.redirect(`/campgrounds/${newCampground._id}`);
             })(req, res, next);
@@ -409,6 +423,36 @@ app.delete('/campgrounds/:id/reviews/:reviewId', catchAsync(async (req, res) => 
     res.redirect(`/campgrounds/${id}`);
 }));
 
+// Test routes for error handling
+app.get('/test-404', (req, res, next) => {
+    next(new ExpressError('Test 404 Error - Page Not Found', 404));
+});
+
+app.get('/test-500', (req, res, next) => {
+    next(new ExpressError('Test 500 Error - Internal Server Error', 500));
+});
+
+// Demo route that shows all error types
+app.get('/error-demo', (req, res) => {
+    res.send(`
+        <html>
+        <head><title>Error Demo</title></head>
+        <body style="font-family: Arial; padding: 20px;">
+            <h1>Error Page Testing</h1>
+            <p>Click the links below to test different error pages:</p>
+            <ul>
+                <li><a href="/test-404">404 Error with Lottie Animation</a></li>
+                <li><a href="/test-500">500 Error (Regular Error Page)</a></li>
+                <li><a href="/random-nonexistent-page">Natural 404 (Any random URL)</a></li>
+                <li><a href="/campgrounds/invalid-id">Invalid Campground ID</a></li>
+                <li><a href="/">Back to Home</a></li>
+            </ul>
+            <p><em>The 404 errors will show your new animated page with the lonely character!</em></p>
+        </body>
+        </html>
+    `);
+});
+
 // Error handler
 
 app.all('*', (req, res, next) => {
@@ -418,11 +462,19 @@ app.all('*', (req, res, next) => {
 app.use((err, req, res, next) => {
     const { statusCode = 500 } = err;
     if (!err.message) err.message = 'Oh no, something went wrong';
-    res.status(statusCode).render('error', { err });
+
+    // Use the animated 404 page for 404 errors
+    if (statusCode === 404) {
+        res.status(404).render('404', { err });
+    } else {
+        // Use the regular error page for other errors
+        res.status(statusCode).render('error', { err });
+    }
 });
 
 
 // Start server
-app.listen(3000, () => {
-    console.log('Serving on port 3000');
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+    console.log(`Serving on port ${PORT}`);
 });
