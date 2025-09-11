@@ -16,6 +16,14 @@
 </head>
 
 <body class="d-flex flex-column vh-100">
+    <!-- Page Transition Loading Overlay -->
+    <div id="page-loader" class="page-loader">
+        <div class="loader-content">
+            <div id="page-loader-animation"></div>
+            <p class="loader-text">Loading...</p>
+        </div>
+    </div>
+
     <%- include('../partials/navbar')%>
         <main class="container mt-5">
             <%- include('../partials/flash')%>
@@ -30,6 +38,184 @@
                 crossorigin="anonymous"></script>
             <!-- Image Upload JavaScript -->
             <script src="/js/image-upload.js"></script>
+
+            <!-- Lottie Web Library for Page Loader -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.10.1/lottie.min.js"></script>
+
+            <!-- Page Transition Loading Animation -->
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const pageLoader = document.getElementById('page-loader');
+                    const loaderAnimation = document.getElementById('page-loader-animation');
+
+                    // Initialize Lottie animation with better performance settings
+                    let loadingAnimation;
+                    if (loaderAnimation) {
+                        loadingAnimation = lottie.loadAnimation({
+                            container: loaderAnimation,
+                            renderer: 'svg',
+                            loop: true,
+                            autoplay: false,
+                            path: '/Trail loading.json',
+                            rendererSettings: {
+                                progressiveLoad: false,
+                                hideOnTransparent: true
+                            }
+                        });
+                    }
+
+                    // Improved show/hide functions with better performance
+                    function showPageLoader(text = 'Loading...') {
+                        pageLoader.querySelector('.loader-text').textContent = text;
+                        pageLoader.style.display = 'flex';
+                        // Force reflow
+                        pageLoader.offsetHeight;
+                        pageLoader.classList.remove('hidden');
+                        if (loadingAnimation) loadingAnimation.play();
+
+                        // Auto-hide after 2 seconds
+                        setTimeout(() => {
+                            hidePageLoader();
+                        }, 2000);
+                    }
+
+                    function hidePageLoader() {
+                        pageLoader.classList.add('hidden');
+                        if (loadingAnimation) {
+                            loadingAnimation.stop();
+                            loadingAnimation.goToAndStop(0);
+                        }
+                        // Completely hide after transition
+                        setTimeout(() => {
+                            pageLoader.style.display = 'none';
+                        }, 400);
+                    }
+
+                    // Only intercept internal navigation - fix Google auth
+                    document.querySelectorAll('a[href]').forEach(link => {
+                        link.addEventListener('click', function (e) {
+                            const href = this.getAttribute('href');
+
+                            // Skip external links, anchors, auth routes, and javascript
+                            if (href.startsWith('http') ||
+                                href.startsWith('#') ||
+                                href.startsWith('javascript:') ||
+                                href.includes('/auth/') ||
+                                href.includes('google') ||
+                                this.target === '_blank') {
+                                return; // Don't prevent default, let it proceed normally
+                            }
+
+                            // Only show loader for internal page navigation
+                            if (href.startsWith('/') && !href.includes('/auth/')) {
+                                e.preventDefault();
+                                showPageLoader('Loading page...');
+
+                                setTimeout(() => {
+                                    window.location.href = href;
+                                }, 200);
+                            }
+                        });
+                    });
+
+                    // Handle form submissions (but skip auth forms)
+                    document.querySelectorAll('form').forEach(form => {
+                        form.addEventListener('submit', function (e) {
+                            const action = this.getAttribute('action') || '';
+
+                            // Skip auth-related forms
+                            if (action.includes('/auth/') || action.includes('google')) {
+                                return; // Let it proceed normally
+                            }
+
+                            showPageLoader('Processing...');
+                        });
+                    });
+
+                    // Hide loader when page loads
+                    window.addEventListener('load', function () {
+                        setTimeout(hidePageLoader, 300);
+                    });
+
+                    // Initial hide
+                    hidePageLoader();
+                });
+            </script>
+
+            <!-- Loading Animation CSS -->
+            <style>
+                .page-loader {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background: rgba(255, 255, 255, 0.95);
+                    backdrop-filter: blur(10px);
+                    z-index: 10000;
+                    display: none;
+                    justify-content: center;
+                    align-items: center;
+                    transition: opacity 0.3s ease;
+                    will-change: opacity;
+                    transform: translateZ(0);
+                }
+
+                .page-loader.hidden {
+                    opacity: 0;
+                    pointer-events: none;
+                }
+
+                .loader-content {
+                    text-align: center;
+                    transform: translateZ(0);
+                }
+
+                #page-loader-animation {
+                    width: 150px;
+                    height: 150px;
+                    margin: 0 auto 20px;
+                    will-change: transform;
+                    transform: translateZ(0);
+                }
+
+                .loader-text {
+                    font-size: 1.2rem;
+                    color: #666;
+                    margin: 0;
+                    font-weight: 500;
+                    opacity: 0.8;
+                }
+
+                /* Hardware acceleration for smoother animations */
+                .page-loader,
+                #page-loader-animation,
+                .loader-content {
+                    backface-visibility: hidden;
+                    -webkit-backface-visibility: hidden;
+                    -webkit-transform: translateZ(0);
+                    transform: translateZ(0);
+                }
+
+                /* Responsive adjustments */
+                @media (max-width: 768px) {
+                    #page-loader-animation {
+                        width: 120px;
+                        height: 120px;
+                    }
+
+                    .loader-text {
+                        font-size: 1rem;
+                    }
+                }
+
+                /* Reduce motion for users who prefer it */
+                @media (prefers-reduced-motion: reduce) {
+                    .page-loader {
+                        transition: none;
+                    }
+                }
+            </style>
 
 </body>
 

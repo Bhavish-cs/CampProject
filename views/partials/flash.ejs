@@ -99,7 +99,7 @@
 
                                         <!-- Lottie Web Library -->
                                         <script
-                                            src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+                                            src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.10.1/lottie.min.js"></script>
 
                                         <script>
                                             // Professional Flash Message System with Lottie Animations
@@ -120,48 +120,62 @@
                                                 // Success Lottie Animation (Checkmark)
                                                 const successContainer = document.getElementById('success-lottie');
                                                 if (successContainer) {
-                                                    successContainer.innerHTML = '<lottie-player src="https://assets9.lottiefiles.com/packages/lf20_jcikwtux.json" background="transparent" speed="1" style="width: 40px; height: 40px;" autoplay></lottie-player>';
+                                                    lottie.loadAnimation({
+                                                        container: successContainer,
+                                                        renderer: 'svg',
+                                                        loop: false,
+                                                        autoplay: true,
+                                                        path: 'https://assets9.lottiefiles.com/packages/lf20_jcikwtux.json'
+                                                    });
                                                 }
 
                                                 // Error Lottie Animation (Cross/X)
                                                 const errorContainer = document.getElementById('error-lottie');
                                                 if (errorContainer) {
-                                                    errorContainer.innerHTML = '<lottie-player src="https://assets4.lottiefiles.com/packages/lf20_khzniaya.json" background="transparent" speed="1" style="width: 40px; height: 40px;" autoplay></lottie-player>';
+                                                    lottie.loadAnimation({
+                                                        container: errorContainer,
+                                                        renderer: 'svg',
+                                                        loop: false,
+                                                        autoplay: true,
+                                                        path: 'https://assets4.lottiefiles.com/packages/lf20_khzniaya.json'
+                                                    });
                                                 }
 
                                                 // Warning Lottie Animation (Exclamation)
                                                 const warningContainer = document.getElementById('warning-lottie');
                                                 if (warningContainer) {
-                                                    warningContainer.innerHTML = '<lottie-player src="https://assets8.lottiefiles.com/packages/lf20_round_loader.json" background="transparent" speed="1" style="width: 40px; height: 40px;" autoplay></lottie-player>';
+                                                    lottie.loadAnimation({
+                                                        container: warningContainer,
+                                                        renderer: 'svg',
+                                                        loop: true,
+                                                        autoplay: true,
+                                                        path: 'https://assets8.lottiefiles.com/packages/lf20_round_loader.json'
+                                                    });
                                                 }
 
                                                 // Info Lottie Animation (Info icon)
                                                 const infoContainer = document.getElementById('info-lottie');
                                                 if (infoContainer) {
-                                                    infoContainer.innerHTML = '<lottie-player src="https://assets1.lottiefiles.com/packages/lf20_06a6pf9i.json" background="transparent" speed="1" style="width: 40px; height: 40px;" autoplay></lottie-player>';
+                                                    lottie.loadAnimation({
+                                                        container: infoContainer,
+                                                        renderer: 'svg',
+                                                        loop: false,
+                                                        autoplay: true,
+                                                        path: 'https://assets1.lottiefiles.com/packages/lf20_06a6pf9i.json'
+                                                    });
                                                 }
 
                                                 // No Data Lottie Animation (Using the provided JSON)
                                                 const noDataContainer = document.getElementById('no-data-lottie');
                                                 if (noDataContainer) {
-                                                    // Load the custom no data found animation from local file
-                                                    fetch('/no data found json.json')
-                                                        .then(response => response.json())
-                                                        .then(animationData => {
-                                                            const player = document.createElement('lottie-player');
-                                                            player.style.width = '80px';
-                                                            player.style.height = '80px';
-                                                            player.background = 'transparent';
-                                                            player.speed = 1;
-                                                            player.autoplay = true;
-                                                            player.load(animationData);
-                                                            noDataContainer.appendChild(player);
-                                                        })
-                                                        .catch(error => {
-                                                            console.error('Error loading no-data animation:', error);
-                                                            // Fallback to a simple icon
-                                                            noDataContainer.innerHTML = '<i class="bi bi-inbox" style="font-size: 3rem; color: #6c757d;"></i>';
-                                                        });
+                                                    // Simple Lottie integration using bodymovin
+                                                    lottie.loadAnimation({
+                                                        container: noDataContainer,
+                                                        renderer: 'svg',
+                                                        loop: true,
+                                                        autoplay: true,
+                                                        path: '/no data found json.json'  // Path to your JSON file in public folder
+                                                    });
                                                 }
                                             }
 
