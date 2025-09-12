@@ -266,7 +266,7 @@ app.get('/campgrounds/:id', catchAsync(async (req, res) => {
     const currentUserId = getUserId(req);
 
     // Render the show page
-    res.render('campgrounds/show', { campground, timeAgo, currentUserId });
+    res.render('campgrounds/show', { campground, timeAgo, currentUserId, process: process });
 }));
 
 

@@ -15,6 +15,27 @@ const campgroundSchema = new Schema({
     price: Number, // Changed to Number for price
     description: String,
     location: String,
+    // Geographic coordinates for map display
+    geometry: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            default: 'Point'
+        },
+        coordinates: {
+            type: [Number], // [longitude, latitude]
+            default: [0, 0]
+        }
+    },
+    // Individual coordinate fields for easier access
+    latitude: {
+        type: Number,
+        default: 0
+    },
+    longitude: {
+        type: Number,
+        default: 0
+    },
     author: {
         type: Schema.Types.ObjectId,
         ref: 'User'
