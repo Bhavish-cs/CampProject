@@ -282,34 +282,3 @@
         background: rgba(0, 0, 0, 0.3);
     }
 }
-
-/* Lottie Animation Sizing */
-.lottie-success,
-.lottie-error,
-.lottie-warning,
-.lottie-info {
-    width: 40px !important;
-    height: 40px !important;
-}
-
-.lottie-no-data {
-    width: 70px !important;
-    height: 70px !important;
-}
-
-/* Mobile Lottie Adjustments */
-@media (max-width: 768px) {
-
-    .lottie-success,
-    .lottie-error,
-    .lottie-warning,
-    .lottie-info {
-        width: 35px !important;
-        height: 35px !important;
-    }
-
-    .lottie-no-data {
-        width: 55px !important;
-        height: 55px !important;
-    }
-}

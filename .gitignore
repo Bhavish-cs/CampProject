@@ -1,9 +1,2 @@
 node_modules
 .env
-
-# Google OAuth credentials file (contains secrets)
-client_secret_*.json
-
-# Other sensitive files
-*.pem
-*.key

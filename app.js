@@ -266,7 +266,7 @@ app.get('/campgrounds/:id', catchAsync(async (req, res) => {
     const currentUserId = getUserId(req);
 
     // Render the show page
-    res.render('campgrounds/show', { campground, timeAgo, currentUserId, process: process });
+    res.render('campgrounds/show', { campground, timeAgo, currentUserId });
 }));
 
 
@@ -474,7 +474,7 @@ app.use((err, req, res, next) => {
 
 
 // Start server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Serving on port ${PORT}`);
 });
