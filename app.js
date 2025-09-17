@@ -220,10 +220,33 @@ app.post('/campgrounds', isLoggedIn, (req, res, next) => {
 // List campgrounds
 app.get('/campgrounds', catchAsync(async (req, res) => {
     const campgrounds = await Campground.find({});
-    res.render('campgrounds/index', { campgrounds });
-}));
 
-// New campground form
+    // Debug: Log campground data
+    console.log(`Found ${campgrounds.length} campgrounds`);
+    console.log('Sample campground:', campgrounds[0] ? {
+        id: campgrounds[0]._id,
+        title: campgrounds[0].title,
+        lat: campgrounds[0].latitude,
+        lng: campgrounds[0].longitude
+    } : 'No campgrounds found');
+
+    // Prepare coordinates for cluster map
+    const mapData = campgrounds
+        .filter(campground => campground.latitude && campground.longitude)
+        .map(campground => ({
+            id: campground._id,
+            title: campground.title,
+            location: campground.location,
+            coordinates: [campground.longitude, campground.latitude],
+            price: campground.price,
+            image: campground.images && campground.images.length > 0 ? campground.images[0].url : campground.image
+        }));
+
+    console.log(`Filtered ${mapData.length} campgrounds with coordinates`);
+    console.log('MapData sample:', mapData[0] || 'No data with coordinates');
+
+    res.render('campgrounds/index', { campgrounds, mapData: JSON.stringify(mapData) });
+}));// New campground form
 app.get('/campgrounds/new', isLoggedIn, (req, res) => {
     res.render('campgrounds/new');
 });
@@ -474,7 +497,7 @@ app.use((err, req, res, next) => {
 
 
 // Start server
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Serving on port ${PORT}`);
 });
