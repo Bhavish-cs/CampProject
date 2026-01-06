@@ -131,7 +131,7 @@ app.use(authRoutes);
 
 // Home Route
 app.get('/', (req, res) => {
-    res.send('HELLO FROM CAMP!');
+    res.render('home');
 });
 
 // Test routes for flash messages (Remove in production)

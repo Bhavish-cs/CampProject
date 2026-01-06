@@ -1,729 +1,349 @@
 <% layout('layouts/boilerplate') %>
-    <!-- Main content with responsive layout -->
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-10 col-lg-8">
-            <div class="card shadow-sm border-0 mb-4">
-                <!-- Image Carousel -->
-                <% if (campground.images && campground.images.length> 0) { %>
-                    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-indicators">
-                            <% campground.images.forEach((img, index)=> { %>
-                                <button type="button" data-bs-target="#carouselExampleIndicators"
-                                    data-bs-slide-to="<%= index %>" class="<%= index === 0 ? 'active' : '' %>"
-                                    aria-current="<%= index === 0 ? 'true' : 'false' %>"
-                                    aria-label="Slide <%= index + 1 %>"></button>
-                                <% }) %>
-                        </div>
-                        <div class="carousel-inner">
-                            <% campground.images.forEach((img, index)=> { %>
-                                <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
-                                    <img src="<%= img.url %>" class="d-block w-100"
-                                        alt="Campground Image <%= index + 1 %>"
-                                        style="object-fit:contain; height:250px; background-color:#f8f9fa; border-top-left-radius:0.5rem; border-top-right-radius:0.5rem;">
+    <link rel="stylesheet" href="/stylesheets/campground-show.css">
 
-                                    <!-- Mobile optimization for images -->
-                                    <style>
-                                        @media (min-width: 768px) {
-                                            .carousel-item img {
-                                                height: 400px !important;
-                                            }
-                                        }
-                                    </style>
-                                </div>
-                                <% }) %>
-                        </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
-                            data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
-                            data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
-                    </div>
-                    <% } else if (campground.image) { %>
-                        <!-- Fallback for old single image format -->
-                        <img src="<%= campground.image %>" class="card-img-top img-fluid" alt="Campground Image"
-                            style="object-fit:contain; height:400px; background-color:#f8f9fa; border-top-left-radius:0.5rem; border-top-right-radius:0.5rem;">
-                        <% } else { %>
-                            <!-- No images placeholder -->
-                            <div class="d-flex align-items-center justify-content-center bg-light"
-                                style="height:400px; border-top-left-radius:0.5rem; border-top-right-radius:0.5rem;">
-                                <div class="text-center text-muted">
-                                    <i class="bi bi-image" style="font-size: 3rem;"></i>
-                                    <p class="mt-2">No images available</p>
-                                </div>
+    <div class="container campground-show-container">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Campground Main Card -->
+                <div class="campground-main-card">
+                    <!-- Image Carousel -->
+                    <% if (campground.images && campground.images.length> 0) { %>
+                        <div id="campgroundCarousel" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-indicators">
+                                <% campground.images.forEach((img, index)=> { %>
+                                    <button type="button" data-bs-target="#campgroundCarousel"
+                                        data-bs-slide-to="<%= index %>" class="<%= index === 0 ? 'active' : '' %>"
+                                        aria-current="<%= index === 0 ? 'true' : 'false' %>">
+                                    </button>
+                                    <% }); %>
                             </div>
-                            <% } %>
-                                <div class="card-body">
-                                    <h5 class="card-title">
-                                        <%= campground.title %>
-                                    </h5>
-                                    <p class="card-text">
-                                        <%= campground.description %>.
-                                    </p>
-
-                                    <!-- Carousel Info for multiple images -->
-                                    <% if (campground.images && campground.images.length> 1) { %>
-                                        <div class="alert alert-info alert-dismissible fade show py-2 px-3 mb-3"
-                                            role="alert" style="font-size: 0.875rem;">
-                                            <i class="bi bi-info-circle me-2"></i>
-                                            <strong>Carousel Controls:</strong> Auto-slides every 4 seconds •
-                                            <i class="bi bi-arrow-left"></i><i class="bi bi-arrow-right"></i> Navigate •
-                                            <i class="bi bi-play-pause"></i> Play/Pause •
-                                            <kbd>Space</kbd> Toggle •
-                                            Hover to pause
-                                            <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <% } %>
+                            <div class="carousel-inner">
+                                <% campground.images.forEach((img, index)=> { %>
+                                    <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                                        <img src="<%= img.url %>" alt="<%= campground.title %>">
+                                    </div>
+                                    <% }); %>
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#campgroundCarousel"
+                                data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon"></span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#campgroundCarousel"
+                                data-bs-slide="next">
+                                <span class="carousel-control-next-icon"></span>
+                            </button>
+                        </div>
+                        <% } else if (campground.image) { %>
+                            <img src="<%= campground.image %>" style="width: 100%; height: 500px; object-fit: cover;">
+                            <% } else { %>
+                                <div
+                                    style="height: 500px; background: linear-gradient(135deg, #e3f2fd, #bbdefb); display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-image" style="font-size: 5rem; color: #1E3A5F; opacity: 0.3;"></i>
                                 </div>
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item text-muted">
-                                        <i class="bi bi-geo-alt"></i>
-                                        <%= campground.location %>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <i class="bi bi-currency-dollar"></i> $<%= campground.price %>/night
-                                    </li>
-                                    <% if (campground.author) { %>
-                                        <li class="list-group-item text-muted">
-                                            <i class="bi bi-person-circle"></i> Hosted by <%= campground.author.username
-                                                || 'Anonymous' %>
+                                <% } %>
+
+                                    <!-- Campground Info -->
+                                    <div class="campground-info">
+                                        <h1 class="campground-title">
+                                            <%= campground.title %>
+                                        </h1>
+                                        <p class="campground-description">
+                                            <%= campground.description %>
+                                        </p>
+
+                                        <% if (campground.images && campground.images.length> 1) { %>
+                                            <div class="carousel-alert">
+                                                <i class="fas fa-info-circle me-2"></i>
+                                                <strong>Tip:</strong> Use arrow keys or swipe to view <%=
+                                                    campground.images.length %> images
+                                            </div>
+                                            <% } %>
+                                    </div>
+
+                                    <!-- Details List -->
+                                    <ul class="campground-details-list">
+                                        <li>
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <div>
+                                                <strong>Location</strong><br>
+                                                <span class="text-muted">
+                                                    <%= campground.location %>
+                                                </span>
+                                            </div>
                                         </li>
-                                        <% } %>
-                                </ul>
-                                <div class="card-body px-3 py-2">
+                                        <li>
+                                            <i class="fas fa-dollar-sign"></i>
+                                            <div>
+                                                <strong>Price</strong><br>
+                                                <span class="price-highlight">$<%= campground.price %></span><span
+                                                    class="text-muted">/night</span>
+                                            </div>
+                                        </li>
+                                        <% if (campground.author) { %>
+                                            <li>
+                                                <i class="fas fa-user-circle"></i>
+                                                <div>
+                                                    <strong>Hosted by</strong><br>
+                                                    <span class="text-muted">
+                                                        <%= campground.author.username || 'Anonymous' %>
+                                                    </span>
+                                                </div>
+                                            </li>
+                                            <% } %>
+                                    </ul>
+
+                                    <!-- Action Buttons -->
                                     <% if (campground.author && currentUserId && campground.author._id &&
                                         campground.author._id.toString()===currentUserId.toString()) { %>
-                                        <div class="d-flex align-items-center gap-2 justify-content-center mb-3">
-                                            <a class="btn btn-info" href="/campgrounds/<%= campground._id %>/edit">
-                                                <i class="bi bi-pencil-square"></i> Edit
+                                        <div class="campground-actions">
+                                            <a href="/campgrounds/<%= campground._id %>/edit" class="btn btn-edit">
+                                                <i class="fas fa-edit me-2"></i>Edit Campground
                                             </a>
-                                            <form class="d-inline"
-                                                action="/campgrounds/<%=campground._id%>?_method=DELETE" method="POST">
-                                                <button class="btn btn-danger">
-                                                    <i class="bi bi-trash"></i> Delete
+                                            <form action="/campgrounds/<%= campground._id %>?_method=DELETE"
+                                                method="POST" class="d-inline">
+                                                <button type="submit" class="btn btn-delete">
+                                                    <i class="fas fa-trash me-2"></i>Delete
                                                 </button>
                                             </form>
                                         </div>
                                         <% } %>
-                                            <div class="text-center">
-                                                <a href="/campgrounds" class="btn btn-outline-success fw-bold"
-                                                    style="letter-spacing: 1px; padding: 0.5rem 1.2rem;">
-                                                    <i class="bi bi-arrow-left-circle"></i> All Campgrounds
+
+                                            <div class="campground-actions">
+                                                <a href="/campgrounds" class="btn btn-back">
+                                                    <i class="fas fa-arrow-left me-2"></i>All Campgrounds
                                                 </a>
                                             </div>
-                                </div>
-                                <!-- Review Submission Form in a separate div -->
-            </div> <!-- close card -->
-        </div> <!-- close col -->
-    </div> <!-- close row -->
-
-    <!-- Location Map Section -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">
-                        <i class="bi bi-geo-alt-fill me-2"></i>Location
-                    </h5>
                 </div>
-                <div class="card-body p-0">
-                    <!-- Map Container -->
-                    <div id="campground-map" style="height: 350px; width: 100%;">
-                        <style>
-                            /* Mobile full-width optimization */
-                            @media (max-width: 767px) {
-                                .container .row .col-12 .card {
-                                    margin-left: -15px;
-                                    margin-right: -15px;
-                                    border-radius: 0 !important;
-                                    border-left: none !important;
-                                    border-right: none !important;
-                                }
 
-                                .container .row .col-12 .card .card-header {
-                                    border-radius: 0 !important;
-                                }
-
-                                #campground-map {
-                                    height: 350px !important;
-                                }
-                            }
-
-                            @media (min-width: 768px) {
-                                #campground-map {
-                                    height: 400px !important;
-                                }
-                            }
-                        </style>
+                <!-- Map Section -->
+                <div class="map-section">
+                    <div class="map-header">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <h5>Location</h5>
                     </div>
-                </div>
-                <!-- Map Info Panel -->
-                <div class="p-3 bg-light border-top">
-                    <div class="row align-items-center">
-                        <div class="col-md-8">
-                            <h6 class="mb-1 text-primary">
-                                <i class="bi bi-pin-map-fill me-2"></i>
-                                <%= campground.title %>
-                            </h6>
-                            <p class="mb-0 text-muted">
-                                <i class="bi bi-geo-alt me-1"></i>
-                                <%= campground.location %>
-                            </p>
-                            <% if (campground.latitude && campground.longitude) { %>
-                                <small class="text-muted">
-                                    <i class="bi bi-compass me-1"></i>
-                                    Coordinates: <%= campground.latitude.toFixed(6) %>, <%=
-                                            campground.longitude.toFixed(6) %>
-                                </small>
-                                <% } %>
-                        </div>
-                        <div class="col-md-4 text-md-end">
-                            <!-- Mobile: Stack buttons vertically, Desktop: Horizontal -->
-                            <div class="d-md-none">
-                                <div class="btn-group btn-group-sm w-100 mb-2" role="group">
-                                    <button type="button" class="btn btn-outline-primary" id="mapStyleStreets">
-                                        <i class="bi bi-map me-1"></i>Streets
-                                    </button>
-                                    <button type="button" class="btn btn-outline-primary active" id="mapStyleOutdoor">
-                                        <i class="bi bi-tree me-1"></i>Outdoor
-                                    </button>
-                                </div>
-                                <div class="btn-group btn-group-sm w-100" role="group">
-                                    <button type="button" class="btn btn-outline-primary" id="mapStyleSatellite">
-                                        <i class="bi bi-satellite me-1"></i>Satellite
-                                    </button>
-                                    <button type="button" class="btn btn-outline-success" id="toggle3D">
-                                        <i class="bi bi-mountain me-1"></i>3D
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Desktop: Horizontal buttons -->
-                            <div class="btn-group btn-group-sm d-none d-md-flex" role="group">
-                                <button type="button" class="btn btn-outline-primary" id="mapStyleStreets">
-                                    <i class="bi bi-map me-1"></i>Streets
-                                </button>
-                                <button type="button" class="btn btn-outline-primary active" id="mapStyleOutdoor">
-                                    <i class="bi bi-tree me-1"></i>Outdoor
-                                </button>
-                                <button type="button" class="btn btn-outline-primary" id="mapStyleSatellite">
-                                    <i class="bi bi-satellite me-1"></i>Satellite
-                                </button>
-                                <button type="button" class="btn btn-outline-success" id="toggle3D">
-                                    <i class="bi bi-mountain me-1"></i>3D
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Reviews Section -->
-    <div class="row justify-content-center mt-4">
-        <div class="col-12 col-md-10 col-lg-8">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <h5 class="mb-3 text-primary"><i class="bi bi-chat-dots"></i> Leave a Review</h5>
-                    <form action="/campgrounds/<%= campground._id %>/reviews" method="POST" class="needs-validation"
-                        novalidate>
-                        <div class="mb-3">
-                            <label for="reviewBody" class="form-label fw-semibold">Your Review</label>
-                            <textarea class="form-control" id="reviewBody" name="review[body]" rows="4"
-                                placeholder="Share your experience... (minimum 5 characters)" required minlength="5"
-                                maxlength="500"></textarea>
-                            <div class="invalid-feedback">
-                                Please provide a review between 5 and 500 characters.
-                            </div>
-                            <div class="form-text">
-                                <span id="charCount">0</span>/500 characters
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold d-block mb-1">Rating</label>
-                            <div id="starRating" class="mb-1" style="font-size:2rem;">
-                                <% for(let i=1; i<=5; i++) { %>
-                                    <span class="star" data-value="<%=i%>"
-                                        style="color:#ddd; cursor:pointer; transition:color 0.2s;">
-                                        <i class="bi bi-star-fill"></i>
-                                    </span>
+                    <div id="campground-map"></div>
+                    <div class="map-info-panel">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h6 class="map-info-title">
+                                    <i class="fas fa-map-pin me-2"></i>
+                                    <%= campground.title %>
+                                </h6>
+                                <p class="map-info-location">
+                                    <i class="fas fa-location-arrow me-1"></i>
+                                    <%= campground.location %>
+                                </p>
+                                <% if (campground.latitude && campground.longitude) { %>
+                                    <small class="map-info-coords">
+                                        <i class="fas fa-compass me-1"></i>
+                                        <%= campground.latitude.toFixed(6) %>, <%= campground.longitude.toFixed(6) %>
+                                    </small>
                                     <% } %>
-                                        <input type="hidden" name="review[rating]" id="ratingInput" required>
                             </div>
-                            <div class="invalid-feedback" id="ratingError" style="display: none;">
-                                Please select a rating (1-5 stars).
+                            <div class="col-md-4 text-end">
+                                <div class="map-style-controls">
+                                    <button class="btn-map-style" id="mapStyleStreets">
+                                        <i class="fas fa-map"></i>
+                                    </button>
+                                    <button class="btn-map-style active" id="mapStyleOutdoor">
+                                        <i class="fas fa-tree"></i>
+                                    </button>
+                                    <button class="btn-map-style" id="mapStyleSatellite">
+                                        <i class="fas fa-satellite"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        <button type="submit" class="btn px-4 py-2 fw-bold shadow-sm" id="submitBtn"
-                            style="background: #ffd814; color: #111; border: 1px solid #fcd200; border-radius: 20px; letter-spacing: 1px; box-shadow: 0 2px 5px rgba(0,0,0,0.07); font-weight: 600; font-size: 1.1rem;">
-                            <i class="bi bi-send"></i> Submit Review
-                        </button>
-                    </form>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Display Existing Reviews -->
-    <% if (campground.reviews && campground.reviews.length> 0) { %>
-        <div class="row justify-content-center mt-4">
-            <div class="col-8">
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0 text-dark">
-                            <i class="bi bi-chat-square-text"></i>
-                            Reviews (<%= campground.reviews.length %>)
-                        </h5>
+            <div class="col-lg-4">
+                <!-- Reviews Section -->
+                <div class="reviews-section">
+                    <!-- Review Form -->
+                    <div class="review-form-section">
+                        <h2 class="review-form-title">
+                            <i class="fas fa-star"></i>
+                            Leave a Review
+                        </h2>
+                        <form action="/campgrounds/<%= campground._id %>/reviews" method="POST" class="needs-validation"
+                            novalidate>
+                            <div class="mb-3">
+                                <label for="reviewBody" class="form-label">Your Review</label>
+                                <textarea class="form-control" id="reviewBody" name="review[body]" rows="4"
+                                    placeholder="Share your experience..." required minlength="5"
+                                    maxlength="500"></textarea>
+                                <div class="form-text">
+                                    <span id="charCount">0</span>/500 characters
+                                </div>
+                                <div class="invalid-feedback">
+                                    Please provide a review (5-500 characters).
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Rating</label>
+                                <div id="starRating">
+                                    <% for(let i=1; i <=5; i++) { %>
+                                        <span class="star" data-value="<%= i %>">
+                                            <i class="fas fa-star"></i>
+                                        </span>
+                                        <% } %>
+                                </div>
+                                <input type="hidden" name="review[rating]" id="ratingInput" required>
+                                <div class="invalid-feedback" id="ratingError" style="display: none;">
+                                    Please select a rating.
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-submit-review w-100">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Review
+                            </button>
+                        </form>
                     </div>
-                    <div class="card-body p-0">
-                        <% campground.reviews.forEach((review, index)=> { %>
-                            <div
-                                class="border-bottom p-3 <%= index === campground.reviews.length - 1 ? 'border-0' : '' %>">
-                                <!-- Star Rating Display and Delete Button -->
-                                <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <div class="d-flex align-items-center">
-                                        <div class="me-3">
+
+                    <!-- Reviews List -->
+                    <% if (campground.reviews && campground.reviews.length> 0) { %>
+                        <div class="reviews-list-header">
+                            <i class="fas fa-comments me-2"></i>
+                            Reviews (<%= campground.reviews.length %>)
+                        </div>
+                        <div class="reviews-list">
+                            <% campground.reviews.forEach((review)=> { %>
+                                <div class="review-item">
+                                    <div class="review-header">
+                                        <div class="review-rating">
                                             <% for(let i=1; i <=5; i++) { %>
-                                                <% if(i <=review.rating) { %>
-                                                    <i class="bi bi-star-fill text-warning"></i>
-                                                    <% } else { %>
-                                                        <i class="bi bi-star text-muted"></i>
-                                                        <% } %>
-                                                            <% } %>
+                                                <i
+                                                    class="fas fa-star <%= i <= review.rating ? 'text-warning' : 'text-muted' %>"></i>
+                                                <% } %>
                                         </div>
-                                        <small class="text-muted">
-                                            <i class="bi bi-clock"></i>
-                                            <%= timeAgo(review.createdAt) %>
+                                        <small class="review-date">
+                                            <i class="fas fa-clock me-1"></i>
+                                            <%= timeAgo ? timeAgo(review.createdAt || new Date()) : 'Recently' %>
                                         </small>
                                     </div>
-                                    <!-- Delete Button -->
-                                    <form class="d-inline"
+                                    <p class="review-body">
+                                        <%= review.body %>
+                                    </p>
+                                    <form
                                         action="/campgrounds/<%= campground._id %>/reviews/<%= review._id %>?_method=DELETE"
                                         method="POST">
-                                        <button class="btn btn-sm btn-outline-danger"
-                                            onclick="return confirm('Are you sure you want to delete this review?')"
-                                            title="Delete Review">
-                                            <i class="bi bi-trash"></i>
+                                        <button type="submit" class="btn btn-delete-review">
+                                            <i class="fas fa-trash me-1"></i>Delete
                                         </button>
                                     </form>
                                 </div>
-                                <!-- Review Body -->
-                                <p class="mb-0 text-dark">
-                                    <%= review.body %>
-                                </p>
-                            </div>
-                            <% }); %>
-                    </div>
+                                <% }); %>
+                        </div>
+                        <% } %>
                 </div>
             </div>
         </div>
-        <% } else { %>
-            <div class="row justify-content-center mt-4">
-                <div class="col-8">
-                    <div class="card shadow-sm border-0 bg-light">
-                        <div class="card-body text-center py-4">
-                            <i class="bi bi-chat-square-dots fs-1 text-muted mb-3"></i>
-                            <h6 class="text-muted mb-0">No reviews yet. Be the first to review this campground!</h6>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <% } %>
+    </div>
 
-                <script>
-                    // Enhanced form validation and interactivity
-                    document.addEventListener('DOMContentLoaded', function () {
-                        const stars = document.querySelectorAll('#starRating .star');
-                        const ratingInput = document.getElementById('ratingInput');
-                        const reviewBody = document.getElementById('reviewBody');
-                        const charCount = document.getElementById('charCount');
-                        const form = document.querySelector('.needs-validation');
-                        const submitBtn = document.getElementById('submitBtn');
-                        const ratingError = document.getElementById('ratingError');
+    <script>
+        // Character counter
+        const reviewBody = document.getElementById('reviewBody');
+        const charCount = document.getElementById('charCount');
 
-                        let selected = 0;
+        if (reviewBody && charCount) {
+            reviewBody.addEventListener('input', function () {
+                charCount.textContent = this.value.length;
+            });
+        }
 
-                        // Star rating functionality
-                        stars.forEach((star, idx) => {
-                            star.addEventListener('mouseover', () => {
-                                highlightStars(idx + 1);
-                            });
-                            star.addEventListener('mouseout', () => {
-                                highlightStars(selected);
-                            });
-                            star.addEventListener('click', () => {
-                                selected = idx + 1;
-                                ratingInput.value = selected;
-                                highlightStars(selected);
-                                // Hide rating error message completely
-                                ratingError.style.display = 'none';
-                                ratingError.style.visibility = 'hidden';
-                                ratingError.classList.remove('d-block');
-                                validateForm();
-                            });
-                        });
+        // Star rating
+        const stars = document.querySelectorAll('.star');
+        const ratingInput = document.getElementById('ratingInput');
+        let selectedRating = 0;
 
-                        function highlightStars(count) {
-                            stars.forEach((star, i) => {
-                                star.style.color = i < count ? '#ffd700' : '#ddd';
-                            });
+        stars.forEach((star) => {
+            star.addEventListener('click', function () {
+                selectedRating = parseInt(this.dataset.value);
+                ratingInput.value = selectedRating;
+                updateStars();
+            });
+
+            star.addEventListener('mouseenter', function () {
+                const value = parseInt(this.dataset.value);
+                stars.forEach((s, index) => {
+                    if (index < value) {
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('active');
+                    }
+                });
+            });
+        });
+
+        document.getElementById('starRating').addEventListener('mouseleave', function () {
+            updateStars();
+        });
+
+        function updateStars() {
+            stars.forEach((s, index) => {
+                if (index < selectedRating) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+        }
+
+    // Map initialization
+    <% if (campground.latitude && campground.longitude) { %>
+        if (typeof maptilersdk !== 'undefined') {
+                maptilersdk.config.apiKey = '<%= process.env.MAPTILER_API_KEY %>';
+                const map = new maptilersdk.Map({
+                    container: 'campground-map',
+                    style: maptilersdk.MapStyle.OUTDOOR,
+                    center: [<%= campground.longitude %>, <%= campground.latitude %>],
+                    zoom: 12
+                });
+
+                new maptilersdk.Marker({ color: "#34A0A4" })
+                    .setLngLat([<%= campground.longitude %>, <%= campground.latitude %>])
+                    .setPopup(new maptilersdk.Popup().setHTML("<h6><%= campground.title %></h6><p><%= campground.location %></p>"))
+                    .addTo(map);
+
+                // Map style buttons
+                document.getElementById('mapStyleStreets')?.addEventListener('click', () => {
+                    map.setStyle(maptilersdk.MapStyle.STREETS);
+                    updateActiveButton('mapStyleStreets');
+                });
+                document.getElementById('mapStyleOutdoor')?.addEventListener('click', () => {
+                    map.setStyle(maptilersdk.MapStyle.OUTDOOR);
+                    updateActiveButton('mapStyleOutdoor');
+                });
+                document.getElementById('mapStyleSatellite')?.addEventListener('click', () => {
+                    map.setStyle(maptilersdk.MapStyle.SATELLITE);
+                    updateActiveButton('mapStyleSatellite');
+                });
+
+                function updateActiveButton(activeId) {
+                    document.querySelectorAll('.btn-map-style').forEach(btn => btn.classList.remove('active'));
+                    document.getElementById(activeId)?.classList.add('active');
+                }
+            }
+    <% } %>
+
+            // Form validation
+            (function () {
+                'use strict'
+                const forms = document.querySelectorAll('.needs-validation')
+                Array.from(forms).forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity() || !ratingInput.value) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                            if (!ratingInput.value) {
+                                document.getElementById('ratingError').style.display = 'block';
+                            }
                         }
-
-                        // Character counting
-                        reviewBody.addEventListener('input', function () {
-                            const currentLength = this.value.length;
-                            charCount.textContent = currentLength;
-
-                            if (currentLength > 500) {
-                                charCount.style.color = '#dc3545';
-                            } else if (currentLength < 5) {
-                                charCount.style.color = '#6c757d';
-                            } else {
-                                charCount.style.color = '#198754';
-                            }
-
-                            validateForm();
-                        });
-
-                        // Form validation
-                        function validateForm() {
-                            const bodyValid = reviewBody.value.trim().length >= 5 && reviewBody.value.trim().length <= 500;
-                            const ratingValid = selected > 0;
-
-                            // Hide rating error if rating is valid
-                            if (ratingValid) {
-                                ratingError.style.display = 'none';
-                                ratingError.style.visibility = 'hidden';
-                                ratingError.classList.remove('d-block');
-                            }
-
-                            if (bodyValid && ratingValid) {
-                                submitBtn.disabled = false;
-                                submitBtn.style.opacity = '1';
-                            } else {
-                                submitBtn.disabled = true;
-                                submitBtn.style.opacity = '0.6';
-                            }
-                        }
-
-                        // Form submission validation
-                        form.addEventListener('submit', function (event) {
-                            event.preventDefault();
-                            event.stopPropagation();
-
-                            const bodyValid = reviewBody.value.trim().length >= 5 && reviewBody.value.trim().length <= 500;
-                            const ratingValid = selected > 0;
-
-                            if (!bodyValid) {
-                                reviewBody.classList.add('is-invalid');
-                            }
-
-                            if (!ratingValid) {
-                                ratingError.style.display = 'block';
-                                ratingError.style.visibility = 'visible';
-                                ratingError.classList.add('d-block');
-                            }
-
-                            if (bodyValid && ratingValid) {
-                                form.classList.add('was-validated');
-                                // Submit the form
-                                this.submit();
-                            } else {
-                                // Show validation errors
-                                form.classList.add('was-validated');
-                            }
-                        });
-
-                        // Initial validation
-                        validateForm();
-                    });
-                </script>
-
-                <!-- MapTiler GL JS Library -->
-                <link href="https://cdn.maptiler.com/maptiler-sdk-js/v2.0.3/maptiler-sdk.css" rel="stylesheet">
-                <script src="https://cdn.maptiler.com/maptiler-sdk-js/v2.0.3/maptiler-sdk.umd.js"></script>
-
-                <!-- Campground Data Script -->
-                <script>
-                    // @ts-ignore - EJS template variables below
-                    // VS Code cannot parse EJS syntax, but this works correctly at runtime
-                    window.campgroundData = {
-                        latitude: <%= campground.latitude || 0 %>,
-                        longitude: <%= campground.longitude || 0 %>,
-                        title: "<%= campground.title %>",
-                        location: "<%= campground.location %>",
-                        price: <%= campground.price %>,
-                        apiKey: "<%= process.env.MAPTILER_API_KEY %>"
-                    };
-                </script>
-
-                <!-- Map Implementation Script -->
-                <script>
-                    document.addEventListener('DOMContentLoaded', function () {
-                        // MapTiler API key
-                        maptilersdk.config.apiKey = window.campgroundData.apiKey;
-
-                        // Get campground coordinates
-                        const latitude = window.campgroundData.latitude;
-                        const longitude = window.campgroundData.longitude;
-
-                        // Only initialize map if coordinates are available
-                        if (latitude !== 0 && longitude !== 0) {
-                            // Detect mobile device
-                            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
-
-                            // Choose single map container for both mobile and desktop
-                            const mapContainer = 'campground-map';
-
-                            // Initialize map with mobile-optimized settings
-                            const map = new maptilersdk.Map({
-                                container: mapContainer,
-                                style: maptilersdk.MapStyle.OUTDOOR, // Default to outdoor style
-                                center: [longitude, latitude], // [lng, lat]
-                                zoom: isMobile ? 5 : 6, // Lower initial zoom for mobile
-                                pitch: 0, // Start flat for animation
-                                bearing: 0,
-                                antialias: true, // Enable for smooth 3D rendering
-                                terrain: {
-                                    source: 'terrainSource',
-                                    exaggeration: isMobile ? 1.2 : 1.5 // Less dramatic on mobile
-                                },
-                                // Mobile-specific optimizations
-                                touchZoomRotate: true, // Enable touch gestures
-                                touchPitch: isMobile, // Enable touch pitch on mobile
-                                doubleClickZoom: true, // Enable double-tap zoom
-                                scrollZoom: true,
-                                dragPan: true,
-                                dragRotate: !isMobile, // Disable drag rotate on mobile for better UX
-                                keyboard: false, // Disable keyboard controls on mobile
-                                boxZoom: false, // Disable box zoom on mobile
-                                // Performance optimizations for mobile
-                                renderWorldCopies: false, // Improve performance
-                                refreshExpiredTiles: !isMobile, // Reduce network requests on mobile
-                                maxTileCacheSize: isMobile ? 50 : 500 // Smaller cache for mobile
-                            });
-
-                            // Add terrain source for 3D effect
-                            map.on('load', function () {
-                                // Add terrain source
-                                map.addSource('terrainSource', {
-                                    type: 'raster-dem',
-                                    url: `https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=${maptilersdk.config.apiKey}`,
-                                    tileSize: 256
-                                });
-
-                                // Set terrain for 3D effect
-                                map.setTerrain({
-                                    source: 'terrainSource',
-                                    exaggeration: 1.5
-                                });
-                            });
-
-                            // Add a marker for the campground with mobile optimization
-                            const marker = new maptilersdk.Marker({
-                                color: '#ff6b6b', // Custom red color for camping
-                                scale: isMobile ? 1.0 : 1.2 // Smaller marker on mobile
-                            })
-                                .setLngLat([longitude, latitude])
-                                .addTo(map);
-
-                            // Add popup with campground info - mobile optimized
-                            const popup = new maptilersdk.Popup({
-                                offset: isMobile ? 15 : 25, // Smaller offset on mobile
-                                closeButton: false,
-                                closeOnClick: !isMobile, // Keep open on mobile unless explicitly closed
-                                maxWidth: isMobile ? '280px' : '300px' // Smaller popup on mobile
-                            })
-                                .setHTML(`
-                                <div class="text-center p-2">
-                                    <h6 class="mb-1 text-primary" style="font-size: ${isMobile ? '0.9rem' : '1rem'}"><%= campground.title %></h6>
-                                    <p class="mb-1 small text-muted"><%= campground.location %></p>
-                                    <p class="mb-0 small"><strong>$<%= campground.price %>/night</strong></p>
-                                </div>
-                            `);
-
-                            marker.setPopup(popup);
-
-                            // Map style switching functionality
-                            const mapStyles = {
-                                streets: maptilersdk.MapStyle.STREETS,
-                                outdoor: maptilersdk.MapStyle.OUTDOOR,
-                                satellite: maptilersdk.MapStyle.SATELLITE
-                            };
-
-                            // Style button handlers - Handle both mobile and desktop versions
-                            document.querySelectorAll('[id="mapStyleStreets"], [id="mapStyleStreets-mobile"]').forEach(button => {
-                                button.addEventListener('click', function () {
-                                    switchMapStyle('streets', this);
-                                });
-                            });
-
-                            document.querySelectorAll('[id="mapStyleOutdoor"], [id="mapStyleOutdoor-mobile"]').forEach(button => {
-                                button.addEventListener('click', function () {
-                                    switchMapStyle('outdoor', this);
-                                });
-                            });
-
-                            document.querySelectorAll('[id="mapStyleSatellite"], [id="mapStyleSatellite-mobile"]').forEach(button => {
-                                button.addEventListener('click', function () {
-                                    switchMapStyle('satellite', this);
-                                });
-                            });
-
-                            // 3D toggle functionality - Handle both mobile and desktop versions
-                            let is3D = false;
-                            document.querySelectorAll('[id="toggle3D"], [id="toggle3D-mobile"]').forEach(button => {
-                                button.addEventListener('click', function () {
-                                    is3D = !is3D;
-
-                                    if (is3D) {
-                                        // Enable 3D view with mobile optimization
-                                        map.flyTo({
-                                            pitch: isMobile ? 35 : 45, // Less dramatic pitch on mobile
-                                            bearing: 0,
-                                            duration: isMobile ? 800 : 1000, // Faster transition on mobile
-                                            essential: true // Ensure animation completes
-                                        });
-
-                                        // Update all 3D buttons including mobile
-                                        document.querySelectorAll('[id="toggle3D"], [id="toggle3D-mobile"]').forEach(btn => {
-                                            btn.classList.add('active');
-                                            btn.innerHTML = '<i class="bi bi-mountain me-1"></i>2D';
-                                        });
-                                    } else {
-                                        // Return to 2D view with mobile optimization
-                                        map.flyTo({
-                                            pitch: 0,
-                                            bearing: 0,
-                                            duration: isMobile ? 800 : 1000, // Faster transition on mobile
-                                            essential: true // Ensure animation completes
-                                        });
-
-                                        // Update all 3D buttons including mobile
-                                        document.querySelectorAll('[id="toggle3D"], [id="toggle3D-mobile"]').forEach(btn => {
-                                            btn.classList.remove('active');
-                                            btn.innerHTML = '<i class="bi bi-mountain me-1"></i>3D';
-                                        });
-                                    }
-                                });
-                            });
-
-                            function switchMapStyle(styleKey, buttonElement) {
-                                // Update map style
-                                map.setStyle(mapStyles[styleKey]);
-
-                                // Update button states for both mobile and desktop
-                                document.querySelectorAll('[id^="mapStyle"]').forEach(btn => {
-                                    btn.classList.remove('active');
-                                });
-
-                                // Activate corresponding buttons in both mobile and desktop sets
-                                const capitalizedStyle = styleKey.charAt(0).toUpperCase() + styleKey.slice(1);
-                                document.querySelectorAll(`[id="mapStyle${capitalizedStyle}"], [id="mapStyle${capitalizedStyle}-mobile"]`).forEach(btn => {
-                                    btn.classList.add('active');
-                                });
-
-                                // Re-add marker after style change
-                                map.on('styledata', function () {
-                                    if (!map.getSource('campground-marker')) {
-                                        marker.addTo(map);
-                                    }
-                                });
-                            }
-
-                            // Add map controls with mobile optimization
-                            const navControl = new maptilersdk.NavigationControl({
-                                showCompass: !isMobile, // Hide compass on mobile to save space
-                                showZoom: true,
-                                visualizePitch: !isMobile // Disable pitch indicator on mobile
-                            });
-                            map.addControl(navControl, isMobile ? 'top-left' : 'top-right');
-
-                            // Add geolocation control with mobile-specific settings
-                            const geoControl = new maptilersdk.GeolocateControl({
-                                positionOptions: {
-                                    enableHighAccuracy: isMobile, // High accuracy more important on mobile
-                                    timeout: isMobile ? 10000 : 6000, // Longer timeout on mobile
-                                    maximumAge: isMobile ? 300000 : 600000 // Cache location longer on mobile
-                                },
-                                trackUserLocation: true,
-                                showUserHeading: isMobile, // Show heading on mobile for navigation
-                                fitBoundsOptions: {
-                                    maxZoom: isMobile ? 14 : 16 // Lower max zoom on mobile for better context
-                                }
-                            });
-                            map.addControl(geoControl, isMobile ? 'top-left' : 'top-right');
-
-                            // Mobile-specific touch behavior improvements
-                            if (isMobile) {
-                                // Reduce zoom speed for better mobile control
-                                map.scrollZoom.setWheelZoomRate(1 / 200);
-
-                                // Add mobile-specific event handlers
-                                let touchStartTime = 0;
-                                map.on('touchstart', () => {
-                                    touchStartTime = Date.now();
-                                });
-
-                                // Prevent accidental map interactions during scroll
-                                map.on('touchend', (e) => {
-                                    const touchDuration = Date.now() - touchStartTime;
-                                    if (touchDuration < 200) { // Quick tap
-                                        // Allow normal map interaction
-                                    }
-                                });
-
-                                // Optimize for mobile performance
-                                map.on('movestart', () => {
-                                    map.getCanvasContainer().style.cursor = 'grabbing';
-                                });
-
-                                map.on('moveend', () => {
-                                    map.getCanvasContainer().style.cursor = 'grab';
-                                });
-                            }
-
-                            // Show popup on map load and add zoom animation with 3D effect
-                            map.on('load', function () {
-                                // Mobile-optimized zoom animation
-                                setTimeout(() => {
-                                    map.flyTo({
-                                        center: [longitude, latitude],
-                                        zoom: isMobile ? 10 : 12, // Lower zoom on mobile for better context
-                                        pitch: isMobile ? 30 : 45, // Less dramatic tilt on mobile
-                                        bearing: 0,
-                                        speed: isMobile ? 1.0 : 0.8, // Slightly faster on mobile for better UX
-                                        curve: isMobile ? 1.2 : 1.5, // Smoother curve on mobile
-                                        easing: function (t) {
-                                            return t * (2 - t); // Ease-out animation
-                                        },
-                                        // Mobile-specific animation options
-                                        essential: true // Ensure animation completes even if user interacts
-                                    });
-                                }, isMobile ? 300 : 500); // Faster start on mobile
-
-                                // Show popup after zoom animation - mobile optimized timing
-                                setTimeout(() => {
-                                    marker.togglePopup();
-                                }, isMobile ? 2000 : 2500); // Shorter delay on mobile
-                            });
-
-                        } else {
-                            // Show message if no coordinates available
-                            document.getElementById('campground-map').innerHTML = `
-                                <div class="d-flex align-items-center justify-content-center h-100 bg-light">
-                                    <div class="text-center text-muted">
-                                        <i class="bi bi-geo-alt-fill" style="font-size: 3rem;"></i>
-                                        <p class="mt-2">Location coordinates not available</p>
-                                        <p class="small">Map cannot be displayed for this campground</p>
-                                    </div>
-                                </div>
-                            `;
-                        }
-                    });
-                </script>
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+            })()
+    </script>

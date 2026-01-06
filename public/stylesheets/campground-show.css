@@ -1,0 +1,568 @@
+/* ========================================
+   ELITE CAMPGROUND SHOW/DETAILS PAGE
+   Matching Home Page Color Scheme
+======================================== */
+
+:root {
+    --primary-deep: #0A1128;
+    --primary-navy: #1E3A5F;
+    --primary-blue: #2E5090;
+    --primary-teal: #34A0A4;
+    --accent-gold: #D4AF37;
+    --accent-coral: #FF6B6B;
+    --white: #FFFFFF;
+    --light-gray: #F8F9FA;
+    --medium-gray: #DEE2E6;
+    --dark-gray: #495057;
+    --text-dark: #212529;
+    --gradient-primary: linear-gradient(135deg, #1E3A5F 0%, #2E5090 50%, #34A0A4 100%);
+    --gradient-gold: linear-gradient(135deg, #D4AF37 0%, #FFD700 100%);
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.2);
+    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Main Layout - Better Proportions */
+.campground-show-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* Campground Main Card */
+.campground-main-card {
+    background: var(--white);
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: var(--shadow-xl);
+    border: 2px solid var(--medium-gray);
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+
+.campground-main-card:hover {
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
+}
+
+/* Image Carousel */
+.carousel {
+    background: var(--light-gray);
+}
+
+.carousel-item img {
+    object-fit: cover;
+    height: 500px !important;
+    width: 100%;
+    border-top-left-radius: 23px;
+    border-top-right-radius: 23px;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: rgba(10, 17, 40, 0.7);
+    border-radius: 50%;
+    padding: 2rem;
+    transition: all 0.3s ease;
+}
+
+.carousel-control-prev-icon:hover,
+.carousel-control-next-icon:hover {
+    background-color: rgba(10, 17, 40, 0.9);
+    transform: scale(1.1);
+}
+
+.carousel-indicators button {
+    background-color: var(--primary-teal);
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    transition: all 0.3s ease;
+}
+
+.carousel-indicators button:hover {
+    transform: scale(1.3);
+    opacity: 1;
+}
+
+.carousel-indicators button.active {
+    background-color: var(--accent-gold);
+}
+
+/* Campground Info Section */
+.campground-info {
+    padding: 2.5rem;
+}
+
+.campground-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary-navy);
+    margin-bottom: 1.5rem;
+    font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.campground-description {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: var(--dark-gray);
+    margin-bottom: 2rem;
+}
+
+.carousel-alert {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border: 2px solid var(--primary-blue);
+    border-radius: 15px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Info List */
+.campground-details-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.campground-details-list li {
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid var(--light-gray);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.1rem;
+    transition: background 0.3s ease;
+}
+
+.campground-details-list li:hover {
+    background: var(--light-gray);
+}
+
+.campground-details-list li:last-child {
+    border-bottom: none;
+}
+
+.campground-details-list li i {
+    font-size: 1.5rem;
+    color: var(--primary-teal);
+    width: 30px;
+    text-align: center;
+}
+
+.price-highlight {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary-teal);
+}
+
+/* Action Buttons */
+.campground-actions {
+    padding: 1.5rem 2.5rem;
+    background: var(--light-gray);
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-edit {
+    background: var(--gradient-primary);
+    border: none;
+    border-radius: 50px;
+    color: var(--white);
+    font-weight: 700;
+    padding: 0.8rem 2rem;
+    box-shadow: 0 6px 20px rgba(46, 80, 144, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-edit:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(46, 80, 144, 0.5);
+    color: var(--white);
+}
+
+.btn-edit:focus {
+    outline: 3px solid var(--primary-teal);
+    outline-offset: 3px;
+}
+
+.btn-delete {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border: none;
+    border-radius: 50px;
+    color: var(--white);
+    font-weight: 700;
+    padding: 0.8rem 2rem;
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-delete:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.5);
+}
+
+.btn-delete:focus {
+    outline: 3px solid var(--accent-coral);
+    outline-offset: 3px;
+}
+
+.btn-back {
+    background: var(--white);
+    border: 2px solid var(--primary-teal);
+    border-radius: 50px;
+    color: var(--primary-teal);
+    font-weight: 700;
+    padding: 0.8rem 2rem;
+    transition: all 0.3s ease;
+}
+
+.btn-back:hover {
+    background: var(--primary-teal);
+    color: var(--white);
+    transform: translateY(-3px);
+}
+
+.btn-back:focus {
+    outline: 3px solid var(--primary-blue);
+    outline-offset: 3px;
+}
+
+/* Map Section */
+.map-section {
+    background: var(--white);
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: var(--shadow-xl);
+    border: 2px solid var(--medium-gray);
+    margin-bottom: 2rem;
+}
+
+.map-header {
+    background: var(--gradient-primary);
+    color: var(--white);
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.map-header h5 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+#campground-map {
+    height: 450px;
+    width: 100%;
+}
+
+.map-info-panel {
+    padding: 1.5rem 2rem;
+    background: var(--light-gray);
+    border-top: 2px solid var(--medium-gray);
+}
+
+.map-info-title {
+    color: var(--primary-navy);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.map-info-location {
+    color: var(--dark-gray);
+    margin-bottom: 0.5rem;
+}
+
+.map-info-coords {
+    color: var(--dark-gray);
+    font-size: 0.9rem;
+}
+
+/* Review Section - Better Sizing */
+.reviews-section {
+    background: var(--white);
+    border-radius: 25px;
+    box-shadow: var(--shadow-xl);
+    border: 2px solid var(--medium-gray);
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.review-form-section {
+    padding: 2.5rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.review-form-title {
+    color: var(--primary-navy);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.review-form-title i {
+    color: var(--primary-teal);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--primary-navy);
+    margin-bottom: 0.7rem;
+}
+
+.form-control {
+    border: 2px solid var(--medium-gray);
+    border-radius: 15px;
+    padding: 0.8rem 1.2rem;
+    font-size: 1.05rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary-teal);
+    box-shadow: 0 0 0 3px rgba(52, 160, 164, 0.1);
+}
+
+#charCount {
+    font-weight: 600;
+    color: var(--primary-teal);
+}
+
+/* Star Rating */
+#starRating {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.star {
+    font-size: 2.5rem;
+    color: #ddd;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.star:hover,
+.star.active {
+    color: var(--accent-gold);
+    transform: scale(1.1);
+}
+
+/* Submit Button */
+.btn-submit-review {
+    background: var(--gradient-gold);
+    border: none;
+    border-radius: 50px;
+    color: var(--primary-deep);
+    font-weight: 800;
+    padding: 1rem 3rem;
+    font-size: 1.2rem;
+    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-submit-review:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(212, 175, 55, 0.5);
+}
+
+.btn-submit-review:focus {
+    outline: 3px solid var(--accent-gold);
+    outline-offset: 3px;
+}
+
+/* Reviews List */
+.reviews-list {
+    padding: 2rem;
+}
+
+.reviews-list-header {
+    background: var(--gradient-primary);
+    color: var(--white);
+    padding: 1.5rem 2rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.review-item {
+    padding: 2rem;
+    border-bottom: 2px solid var(--light-gray);
+    transition: background 0.3s ease;
+}
+
+.review-item:hover {
+    background: var(--light-gray);
+}
+
+.review-item:last-child {
+    border-bottom: none;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.review-rating {
+    display: flex;
+    gap: 0.3rem;
+    font-size: 1.3rem;
+}
+
+.review-rating i.text-warning {
+    color: var(--accent-gold) !important;
+}
+
+.review-date {
+    color: var(--dark-gray);
+    font-size: 0.95rem;
+}
+
+.review-body {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+}
+
+.btn-delete-review {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border: none;
+    border-radius: 50px;
+    color: var(--white);
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-delete-review:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.5);
+}
+
+.btn-delete-review:focus {
+    outline: 3px solid var(--accent-coral);
+    outline-offset: 3px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .campground-show-container {
+        padding: 1rem 0.5rem;
+    }
+
+    .carousel-item img {
+        height: 300px !important;
+    }
+
+    .campground-info {
+        padding: 1.5rem;
+    }
+
+    .campground-title {
+        font-size: 1.8rem;
+    }
+
+    .campground-description {
+        font-size: 1rem;
+    }
+
+    .campground-actions {
+        flex-direction: column;
+        padding: 1rem;
+    }
+
+    .campground-actions .btn {
+        width: 100%;
+    }
+
+    #campground-map {
+        height: 350px;
+    }
+
+    .review-form-section {
+        padding: 1.5rem;
+    }
+
+    .review-form-title {
+        font-size: 1.5rem;
+    }
+
+    #starRating {
+        justify-content: center;
+    }
+
+    .star {
+        font-size: 2rem;
+    }
+
+    .reviews-list {
+        padding: 1rem;
+    }
+
+    .review-item {
+        padding: 1.5rem 1rem;
+    }
+}
+
+/* Map Style Buttons */
+.map-style-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-map-style {
+    background: var(--white);
+    border: 2px solid var(--primary-blue);
+    border-radius: 10px;
+    color: var(--primary-blue);
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-map-style:hover,
+.btn-map-style.active {
+    background: var(--primary-blue);
+    color: var(--white);
+}
+
+.btn-map-style i {
+    margin-right: 0.3rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.campground-main-card,
+.map-section,
+.reviews-section {
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}

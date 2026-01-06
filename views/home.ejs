@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampExplorer - Discover Your Next Adventure</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/stylesheets/home.css">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-campground me-2"></i>
+                <span class="brand-text">CampExplorer</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/campgrounds">Explore Camps</a>
+                    </li>
+                    <% if (!currentUser) { %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-primary nav-btn" href="/register">Sign Up</a>
+                        </li>
+                        <% } else { %>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/campgrounds/new">
+                                    <i class="fas fa-plus-circle me-1"></i>Add Camp
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <span class="nav-link text-light">
+                                    <i class="fas fa-user-circle me-1"></i>
+                                    <%= username %>
+                                </span>
+                            </li>
+                            <li class="nav-item">
+                                <form action="/logout" method="POST" class="d-inline">
+                                    <button class="btn btn-outline-light nav-btn" type="submit">Logout</button>
+                                </form>
+                            </li>
+                            <% } %>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="container text-center">
+                <h1 class="hero-title animate-fade-in">Discover Your Next Adventure</h1>
+                <p class="hero-subtitle animate-fade-in-delay">Explore breathtaking campgrounds, share your experiences,
+                    and connect with nature</p>
+                <div class="hero-buttons animate-fade-in-delay-2">
+                    <a href="/campgrounds" class="btn btn-hero btn-primary btn-lg">
+                        <i class="fas fa-compass me-2"></i>Explore Campgrounds
+                    </a>
+                    <% if (!currentUser) { %>
+                        <a href="/register" class="btn btn-hero btn-outline-light btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Join Community
+                        </a>
+                        <% } else { %>
+                            <a href="/campgrounds/new" class="btn btn-hero btn-outline-light btn-lg">
+                                <i class="fas fa-plus-circle me-2"></i>Add Your Camp
+                            </a>
+                            <% } %>
+                </div>
+                <div class="hero-scroll-indicator">
+                    <a href="#features">
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section py-5">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="section-title">Why Choose CampExplorer</h2>
+                <p class="section-subtitle">Everything you need for the perfect camping experience</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        <h3 class="feature-title">Interactive Maps</h3>
+                        <p class="feature-description">Discover campgrounds with our advanced map integration and
+                            location services</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h3 class="feature-title">Verified Reviews</h3>
+                        <p class="feature-description">Read authentic reviews from real campers to make informed
+                            decisions</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-images"></i>
+                        </div>
+                        <h3 class="feature-title">Photo Gallery</h3>
+                        <p class="feature-description">Browse stunning photos and visualize your next camping
+                            destination</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="feature-title">Community Driven</h3>
+                        <p class="feature-description">Join thousands of outdoor enthusiasts sharing their adventures
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section py-5">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="stat-card">
+                        <i class="fas fa-campground stat-icon"></i>
+                        <h3 class="stat-number" data-target="1500">0</h3>
+                        <p class="stat-label">Campgrounds</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="stat-card">
+                        <i class="fas fa-users stat-icon"></i>
+                        <h3 class="stat-number" data-target="5000">0</h3>
+                        <p class="stat-label">Happy Campers</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="stat-card">
+                        <i class="fas fa-comments stat-icon"></i>
+                        <h3 class="stat-number" data-target="12000">0</h3>
+                        <p class="stat-label">Reviews</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="stat-card">
+                        <i class="fas fa-map-pin stat-icon"></i>
+                        <h3 class="stat-number" data-target="50">0</h3>
+                        <p class="stat-label">States Covered</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div class="about-image-container">
+                        <img src="https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=600&h=400&fit=crop"
+                            alt="Camping" class="about-image img-fluid rounded-4 shadow-lg">
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="about-content">
+                        <h2 class="about-title">Your Gateway to Nature</h2>
+                        <p class="about-text">
+                            CampExplorer is more than just a directory - it's a community of passionate outdoor
+                            enthusiasts
+                            who believe in the power of nature to refresh, restore, and inspire. Whether you're a
+                            seasoned
+                            camper or planning your first adventure, we're here to help you discover the perfect spot.
+                        </p>
+                        <p class="about-text">
+                            Our platform brings together verified campground information, authentic reviews, and an
+                            active
+                            community to ensure every camping trip is memorable. Start exploring today and find your
+                            next
+                            outdoor escape.
+                        </p>
+                        <ul class="about-list">
+                            <li><i class="fas fa-check-circle me-2"></i>Verified campground listings</li>
+                            <li><i class="fas fa-check-circle me-2"></i>Authentic user reviews and ratings</li>
+                            <li><i class="fas fa-check-circle me-2"></i>Easy booking and reservations</li>
+                            <li><i class="fas fa-check-circle me-2"></i>24/7 customer support</li>
+                        </ul>
+                        <a href="/campgrounds" class="btn btn-primary btn-lg mt-3">
+                            <i class="fas fa-compass me-2"></i>Start Exploring
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section py-5">
+        <div class="container text-center">
+            <h2 class="cta-title">Ready to Start Your Adventure?</h2>
+            <p class="cta-subtitle">Join thousands of campers discovering amazing outdoor destinations</p>
+            <div class="cta-buttons">
+                <a href="/campgrounds" class="btn btn-light btn-lg">
+                    <i class="fas fa-search me-2"></i>Browse Campgrounds
+                </a>
+                <% if (!currentUser) { %>
+                    <a href="/register" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-user-plus me-2"></i>Create Account
+                    </a>
+                    <% } %>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-3">
+                    <h5 class="footer-title">
+                        <i class="fas fa-campground me-2"></i>CampExplorer
+                    </h5>
+                    <p class="footer-text">Discover amazing campgrounds and create unforgettable memories in the great
+                        outdoors.</p>
+                    <div class="social-links mt-3">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    <h6 class="footer-heading">Quick Links</h6>
+                    <ul class="footer-links">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/campgrounds">Campgrounds</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#features">Features</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    <h6 class="footer-heading">Account</h6>
+                    <ul class="footer-links">
+                        <% if (!currentUser) { %>
+                            <li><a href="/login">Login</a></li>
+                            <li><a href="/register">Sign Up</a></li>
+                            <% } else { %>
+                                <li><a href="/campgrounds/new">Add Camp</a></li>
+                                <li><a href="/logout">Logout</a></li>
+                                <% } %>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    <h6 class="footer-heading">Support</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">FAQs</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    <h6 class="footer-heading">Legal</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="footer-divider">
+            <div class="text-center">
+                <p class="footer-copyright mb-0">
+                    &copy; 2025 CampExplorer. All rights reserved. Made with <i class="fas fa-heart text-danger"></i>
+                    for outdoor enthusiasts.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Navbar background on scroll
+        window.addEventListener('scroll', function () {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('navbar-scrolled');
+            } else {
+                navbar.classList.remove('navbar-scrolled');
+            }
+        });
+
+        // Counter animation
+        const counters = document.querySelectorAll('.stat-number');
+        const speed = 200;
+
+        const animateCounter = (counter) => {
+            const target = +counter.getAttribute('data-target');
+            const count = +counter.innerText;
+            const increment = target / speed;
+
+            if (count < target) {
+                counter.innerText = Math.ceil(count + increment);
+                setTimeout(() => animateCounter(counter), 10);
+            } else {
+                counter.innerText = target.toLocaleString();
+            }
+        };
+
+        // Intersection Observer for counter animation
+        const observerOptions = {
+            threshold: 0.5
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counters = entry.target.querySelectorAll('.stat-number');
+                    counters.forEach(counter => {
+                        counter.innerText = '0';
+                        animateCounter(counter);
+                    });
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        const statsSection = document.querySelector('.stats-section');
+        if (statsSection) {
+            observer.observe(statsSection);
+        }
+
+        // Parallax effect for hero
+        window.addEventListener('scroll', function () {
+            const hero = document.querySelector('.hero-section');
+            const scrolled = window.pageYOffset;
+            if (hero) {
+                hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+            }
+        });
+    </script>
+</body>
+
+</html>
